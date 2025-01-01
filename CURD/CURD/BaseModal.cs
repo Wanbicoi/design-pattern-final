@@ -8,8 +8,8 @@
 
             Reload();
 
-            fieldName.SetLabel("Name");
-            fieldAge.SetLabel("Age");
+            fieldName.SetLabel("Name"); // Change here
+            fieldAge.SetLabel("Age"); // Change here
         }
 
         private void btnCreate_Click(object sender, EventArgs e)
@@ -18,19 +18,19 @@
             {
                 if(btnCreate.Text == "Create")
                 {
-                    var user = new User()
+                    var model = new User() // Change here
                     {
-                        Name = fieldName.GetValue(),
-                        Age = fieldAge.GetValue()
+                        Name = fieldName.GetValue(), // Change here
+                        Age = fieldAge.GetValue() // Change here
                     };
-                    db.Add(user);
+                    db.Add(model);
                 }
                 else
                 {
-                    var user = db.Users.FirstOrDefault(u => u.ID == (dgModal.CurrentRow.DataBoundItem as User)!.ID);
-                    user!.Name = fieldName.GetValue();
-                    user.Age = fieldAge.GetValue();
-                    db.Update(user);
+                    var model = db.Users.FirstOrDefault(u => u.ID == (dgModal.CurrentRow.DataBoundItem as User)!.ID); // Change here
+                    model!.Name = fieldName.GetValue(); // Change here
+                    model.Age = fieldAge.GetValue(); // Change here
+                    db.Update(model);
                 }
                 db.SaveChanges();
             }
@@ -51,30 +51,30 @@
                 {
                     if (!row.IsNewRow)
                     {
-                        var user = row.DataBoundItem as User;
+                        var user = row.DataBoundItem as User; // Change here
                         if (user != null)
                         {
-                            var userInDb = db.Users.FirstOrDefault(u => u.ID == user.ID);
+                            var userInDb = db.Users.FirstOrDefault(u => u.ID == user.ID); // Change here
                             if (userInDb != null)
                             {
-                                db.Users.Remove(userInDb);
+                                db.Users.Remove(userInDb); // Change here
                             }
                         }
                     }
                 }
 
-                db.SaveChanges();
+                db.SaveChanges(); // Change here
             }
 
-            Reload();
+            Reload(); // Change here
         }
 
         void Reload()
         {
-            using (var db = new ApplicationDbContext())
+            using (var db = new ApplicationDbContext()) // Change here
             {
-                var users = db.Users.ToList();
-                dgModal.DataSource = users;
+                var users = db.Users.ToList(); // Change here
+                dgModal.DataSource = users; // Change here
             }
         }
 
@@ -82,11 +82,11 @@
         {
             var row = dgModal.CurrentRow;
             if (row == null) return;
-            var user = row.DataBoundItem as User;
+            var user = row.DataBoundItem as User; // Change here
             if (user != null)
             {
-                fieldName.SetValue(user.Name);
-                fieldAge.SetValue(user.Age);
+                fieldName.SetValue(user.Name); // Change here
+                fieldAge.SetValue(user.Age); // Change here
 
                 btnCreate.Text = "Update";
             }
@@ -97,13 +97,8 @@
             dgModal.ClearSelection();
             btnCreate.Text = "Create";
 
-            fieldAge.SetValue(0);
-            fieldName.SetValue("");
+            fieldAge.SetValue(0); // Change here
+            fieldName.SetValue(""); // Change here
         }
     }
-}
-
-public class Modal
-{
-    public int ID { get; set; }
 }
