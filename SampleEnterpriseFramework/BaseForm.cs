@@ -3,9 +3,9 @@ using System.Data;
 
 namespace SampleEnterpriseFramework
 {
-    public partial class Form1 : Form
+    public partial class BaseForm : Form
     {
-        public Form1()
+        public BaseForm()
         {
             InitializeComponent();
 
@@ -39,6 +39,7 @@ namespace SampleEnterpriseFramework
                 row["Email"] = client.email;
                 row["Phone"] = client.phone;
                 row["Adress"] = client.address;
+                row["Date"] = client.createdAt;
 
                 dataTable.Rows.Add(row);
 

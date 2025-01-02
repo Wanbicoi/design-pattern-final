@@ -1,6 +1,6 @@
 ﻿namespace SampleEnterpriseFramework
 {
-    partial class Form1
+    partial class BaseForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -26,7 +26,7 @@
         ///  Required method for Designer support - do not modify
         ///  the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        protected virtual void InitializeComponent()
         {
             label1 = new Label();
             addBtnClient = new Button();
@@ -117,5 +117,7 @@
         private Button btnDelete;
         private Button btnEditClient;
         private DataGridView clientsTable;
+        public virtual void SetUpForm() { }
     }
+
 }
