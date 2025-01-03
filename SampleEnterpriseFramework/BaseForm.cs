@@ -1,3 +1,4 @@
+using SampleEnterpriseFramework.Models;
 using SampleEnterpriseFramework.Repositories;
 using System.Data;
 
@@ -19,13 +20,21 @@ namespace SampleEnterpriseFramework
         private void ReadClients()
         {
             DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("ID");
-            dataTable.Columns.Add("Name");
-            dataTable.Columns.Add("Email");
-            dataTable.Columns.Add("Phone");
-            dataTable.Columns.Add("Adress");
-            dataTable.Columns.Add("Date");
+            //dataTable.Columns.Add("ID");
+            //dataTable.Columns.Add("Name");
+            //dataTable.Columns.Add("Email");
+            //dataTable.Columns.Add("Phone");
+            //dataTable.Columns.Add("Adress");
+            //dataTable.Columns.Add("Date");
 
+            // Call the static method to get attribute names
+            List<string> attributeNames = Client.GetAttributeNames();
+
+            // Loop through and print the attribute names
+            foreach (string name in attributeNames)
+            {
+                dataTable.Columns.Add(name);
+            }
 
             var repo = new ClientRepository();
             var clients = repo.GetClients();
@@ -34,12 +43,19 @@ namespace SampleEnterpriseFramework
             {
                 var row = dataTable.NewRow();
 
-                row["ID"] = client.id;
-                row["Name"] = client.firstName + client.lastName;
-                row["Email"] = client.email;
-                row["Phone"] = client.phone;
-                row["Adress"] = client.address;
-                row["Date"] = client.createdAt;
+                //row["ID"] = client.id;
+                //row["Name"] = client.firstName + client.lastName;
+                //row["Email"] = client.email;
+                //row["Phone"] = client.phone;
+                //row["Adress"] = client.address;
+                //row["Date"] = client.createdAt;
+
+                Dictionary<string, object> state = client.GetObjectState();
+                // Iterating through dictionary items
+                foreach (KeyValuePair<string, object> kvp in state)
+                {
+                    row[kvp.Key] = kvp.Value.ToString();
+                }
 
                 dataTable.Rows.Add(row);
 
