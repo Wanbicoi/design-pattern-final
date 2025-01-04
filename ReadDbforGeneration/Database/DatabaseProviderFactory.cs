@@ -8,14 +8,14 @@ namespace ReadDbforGeneration.Database
 {
     public class DatabaseProviderFactory
     {
-        public IDatabaseProvider GetDatabaseProvider(string databaseType)
+        public static IDatabaseProvider GetDatabaseProvider(string databaseType)
         {
             switch (databaseType)
             {
                 case "PostgreSql":
                     return new PostgreSqlProviderFactory().GetDatabaseProvider(databaseType);
                 case "MsSql":
-                    return new MsSqlProviderFactory().GetDatabaseProvider(databaseType);
+                    return new SqlServerProviderFactory().GetDatabaseProvider(databaseType);
                 case "MySql":
                     return new MySqlProviderFactory().GetDatabaseProvider(databaseType);
                 default:
@@ -34,11 +34,11 @@ namespace ReadDbforGeneration.Database
         }
     }
 
-    internal class MsSqlProviderFactory : DatabaseProviderFactory
+    internal class SqlServerProviderFactory : DatabaseProviderFactory
     {
         public IDatabaseProvider GetDatabaseProvider(string databaseType)
         {
-            return new MsSqlProvider();
+            return new SqlServerProvider();
         }
     }
 

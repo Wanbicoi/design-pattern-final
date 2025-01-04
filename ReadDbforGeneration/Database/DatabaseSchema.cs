@@ -17,13 +17,11 @@ namespace ReadDbforGeneration.Database
     {
 
         public string DatabaseName { get; set; }
-        public string ConnectionString { get; set; }
         public List<TableSchema> TableSchemas { get;}
 
-        public DatabaseSchema(string databaseName, string connectionString)
+        public DatabaseSchema(string databaseName)
         {
             DatabaseName = databaseName;
-            ConnectionString = connectionString;
             TableSchemas = new List<TableSchema>();
         }
 

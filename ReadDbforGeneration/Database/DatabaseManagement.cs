@@ -34,31 +34,31 @@ namespace ReadDbforGeneration.Database
 
         public void Initialize(string username, string password, string address, string port, string databaseName, string databaseType)
         {
-
-            Provider = DatabaseProviderFactory.GetDatabaseProvider(databaseType);
-            this.ConnectionString = Provider.getConnectionString(username, password, address, port, databaseName,  databaseType);
-
+            IDatabaseProvider databaseProvider = DatabaseProviderFactory.GetDatabaseProvider(databaseType);
+            Provider = databaseProvider;
+            this.ConnectionString = Provider.getConnectionString(username, password, address, port, databaseName);
+            Provider.SetConnectionString(ConnectionString);
         }
 
 
         public void Insert(string tableName, Dictionary<string, object> values)
         {
-            Provider.Insert(tableName, values, ConnectionString);
+            Provider.Insert(tableName, values);
         }
 
-        public void Update(string table, Dictionary<string, object> data, Dictionary<string, object> conditions)
+        public void Update(string tableName, Dictionary<string, object> data, Dictionary<string, object> conditions)
         {
-            // Implement logic for update operation
+            Provider.Update(tableName, data, conditions);
         }
 
-        public void Delete(string table, Dictionary<string, object> conditions)
+        public void Delete(string tableName, Dictionary<string, object> conditions)
         {
-            // Implement logic for delete operation
+            Provider.Delete(tableName, conditions);
         }
 
         public DataTable Read(string table, Dictionary<string, object> conditions)
         {
-            // Implement logic for read operation
+            return Provider.Read(table, conditions);
         }
 
     }

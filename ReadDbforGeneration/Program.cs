@@ -12,6 +12,16 @@ namespace ReadDbforGeneration
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new Form1());
+
+
+            // demo
+            string username = "";
+            string password = "";
+            string databaseType = "";
+            string address = "127.0.0.1";
+            string port = "5432";
+
+            string databaseName = "";
         }
     }
 }
