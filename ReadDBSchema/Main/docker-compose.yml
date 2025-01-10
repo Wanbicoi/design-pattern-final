@@ -1,0 +1,38 @@
+﻿services:
+  # MySQL
+  mysql:
+    image: mysql:8.0.40-bookworm
+    container_name: mysql-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=master
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-scripts/init-db-mysql.sql:/docker-entrypoint-initdb.d/init-db-mysql.sql
+
+    # PostgreSQL
+  postgres:
+    image: postgres:17.2-alpine
+    container_name: postgres-db
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-scripts/init-db-postgresql.sql:/docker-entrypoint-initdb.d/init-db-postgresql.sql
+    command: >
+      bash -c "
+      docker-entrypoint.sh postgres & 
+      sleep 5 && 
+      psql -U postgres -c 'CREATE DATABASE master_postgres;' &&
+      psql -U postgres -d master_postgres -f /docker-entrypoint-initdb.d/init-db-postgresql.sql &&
+      tail -f /dev/null
+      "
+
+volumes:
+  mysql-data:
+  postgres-data:
