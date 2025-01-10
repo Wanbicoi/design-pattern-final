@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Windows.Forms;
-using GenericForm.Products.Fields;
+using GenericForm.Fields;
 
 namespace GenericForm.Products
 {

@@ -1,11 +1,11 @@
-using System.Windows.Forms;
+using System.Reflection;
 
 namespace GenericForm.Fields
 {
     public interface IInputControlStrategy
     {
-        Control CreateControl(string name);
-        void SetValue(Control control, object value);
+        Control CreateControl(PropertyInfo propertyInfo);
         object GetValue(Control control);
+        void SetValue(Control control, object value);
     }
 }

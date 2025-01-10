@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Windows.Forms;
-using GenericForm.Products.Fields;
+using GenericForm.Fields;
 
 namespace GenericForm.Products
 {
@@ -14,10 +14,10 @@ namespace GenericForm.Products
             InitializeComponent();
             _context = new ApplicationDbContext();
             _product = new Product();
-            GenerateForm();
+            GenerateFields();
         }
 
-        private void GenerateForm()
+        private void GenerateFields()
         {
             var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.Name != "ID");
