@@ -44,14 +44,8 @@ namespace Main.Forms
             {
                 MessageBox.Show("Connection successful");
                 GenerateButton.Visible = true;
-
-
-
-
-
-
+                
                 // debug
-
                 DatabaseSchema schema = databaseManagement.GetDatabaseSchema();
                 List<TableSchema> tableSchemas = schema.GetTables();
 

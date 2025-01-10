@@ -66,8 +66,5 @@ namespace ReadDBSchema
                 _ => typeof(object), 
             };
         }
-
-
-
     }
 }
