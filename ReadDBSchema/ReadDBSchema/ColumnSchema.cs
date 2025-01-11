@@ -41,5 +41,14 @@ namespace ReadDBSchema
             return columnName;
         }
 
+        public string GetDataType()
+        {
+            return dataType;
+        }
+
+        public bool IsNullable()
+        {
+            return isNullable;
+        } 
     }
 }

@@ -5,19 +5,26 @@ namespace GenericForm
 
     public interface IBaseModel
     {
-        public int ID { get; set; }
+        //public int ID { get; set; }
+        //public string TableName { get; set; }
     }
     public class User : IBaseModel
     {
         public int ID { get; set; }
         public string Name { get; set; } = default!;
         public int Age { get; set; }
+
+        // Implement TableName property from IBaseModel interface
+        //public string TableName { get; set; } = "Users"; // Set table name to "Users"
+
     }
     public class Product : IBaseModel
     {
         public int ID { get; set; }
         public string Name { get; set; } = default!;
         public int Age { get; set; }
+        // Implement TableName property from IBaseModel interface
+        //public string TableName { get; set; } = "Products"; // Set table name to Product
     }
     public class ApplicationDbContext : DbContext
     {
@@ -53,5 +60,19 @@ namespace GenericForm
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite($"Data Source={Environment.CurrentDirectory}/sqlite.db");
+
+        public void AddDynamicModelToDbContext(string modelName, Type modelType)
+        {
+            var dbSetProperty = typeof(ApplicationDbContext)
+                .GetProperty(modelName);
+
+            if (dbSetProperty == null)
+            {
+                throw new Exception($"DbSet for {modelName} not found in ApplicationDbContext");
+            }
+
+            dbSetProperty.SetValue(this, modelType);
+        }
+
     }
 }

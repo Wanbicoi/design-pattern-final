@@ -21,12 +21,14 @@ namespace ReadDBSchema
         private string ConnectionString;
         private IDatabaseProvider Provider;
         private string DatabaseType;
+        private IDatabaseTypeMapper DatabaseTypeMapper;
 
         public DatabaseManagement(string username, string password, string address, string port, string databaseName, string databaseType)
         {
             this.Provider = DatabaseProviderFactory.GetDatabaseProvider(databaseType);
             this.ConnectionString = this.Provider.GetConnectionString(username, password, address, port, databaseName);
             this.DatabaseType = databaseType;
+            this.DatabaseTypeMapper = DatabaseProviderFactory.GetDataTypeMapper(databaseType);
         }
 
         public bool CheckConnection()
@@ -47,6 +49,11 @@ namespace ReadDBSchema
         public string GetDatabaseType()
         {
             return this.DatabaseType;
+        }
+
+        public IDatabaseTypeMapper GetDatabaseTypeMapper()
+        {
+            return this.DatabaseTypeMapper;
         }
     }
 }

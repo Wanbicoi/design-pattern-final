@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ReadDBSchema;
 using SimpleEnterprisesFramework;
+using Generater;
+using GenericForm;
+using Microsoft.EntityFrameworkCore;
+using MySqlX.XDevAPI;
+using GenericForm.Products;
+using GenericForm.Base;
 
 namespace Main.Forms
 {
@@ -65,14 +71,40 @@ namespace Main.Forms
 
         private void Generate_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Not implemented yet");
+            //MessageBox.Show("Not implemented yet");
+            //DatabaseSchema schema = databaseManagement.GetDatabaseSchema();
+            //List<TableSchema> tableSchemas = schema.GetTables();
+            //foreach (TableSchema s in tableSchemas)
+            //{
+            //    GenerateModel(s);
+            //} 
 
+            this.Hide();
+            //ProductListForm listForm = new ProductListForm(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
+            ClientsListForm listForm = new ClientsListForm(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
+            listForm.Show();
         }
 
         private void Previous_Click(object sender, EventArgs e)
         {
             this.Hide();
             ConfigForm.Show();
+
         }
+
+        private void GenerateModel(TableSchema schema)
+        {
+            // Generate and save model code
+            Generater.Generator _generator = new Generator(this.databaseManagement.GetDatabaseTypeMapper());
+            var code =  _generator.GenerateModelCode(schema);
+            _generator.SaveGeneratedCode(schema.GetTableName(), code);
+
+            // Compile and load
+            var assembly = RuntimeCompiler.CompileCode(code);
+            var modelType = assembly.GetType(schema.GetTableName());
+
+            Console.WriteLine(modelType.Name);
+        }
+
     }
 }
