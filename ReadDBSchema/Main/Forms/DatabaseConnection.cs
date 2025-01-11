@@ -13,8 +13,9 @@ using Generater;
 using GenericForm;
 using Microsoft.EntityFrameworkCore;
 using MySqlX.XDevAPI;
-using GenericForm.Products;
-using GenericForm.Base;
+using GenericForm.DBContext;
+using System.Xml.Linq;
+using GenericForm.ModelForms;
 
 namespace Main.Forms
 {
@@ -80,9 +81,8 @@ namespace Main.Forms
             //} 
 
             this.Hide();
-            //ProductListForm listForm = new ProductListForm(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
-            ClientsListForm listForm = new ClientsListForm(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
-            listForm.Show();
+            MainWindow mainWindow = new MainWindow(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
+            mainWindow.Show();
         }
 
         private void Previous_Click(object sender, EventArgs e)

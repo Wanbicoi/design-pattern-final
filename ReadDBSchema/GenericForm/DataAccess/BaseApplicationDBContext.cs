@@ -2,8 +2,15 @@
 using Microsoft.Extensions.Configuration;
 using System;
 
-namespace GenericForm.Base
+
+namespace GenericForm.DBContext
 {
+    public interface IApplicationDbContext<T> where T: class
+    {
+        DbSet<T> Set();
+
+        public void SaveChanges();
+    }
     public class BaseApplicationDbContext<T> : DbContext where T : class
     {
         private readonly string _databaseType;
@@ -70,6 +77,15 @@ namespace GenericForm.Base
             Set<T>().Load();
         }
 
+        public DbSet<T> Set()
+        {
+            return Set<T>();
+        }
+
+        //void IApplicationDbContext<T>.SaveChanges()
+        //{
+        //    base.SaveChanges();
+        //}
     }
 
     // Example usage with Product model

@@ -8,12 +8,14 @@ namespace GenericForm.BaseModel
     {
         private readonly T _product;
         private readonly Dictionary<PropertyInfo, IInputControlStrategy> _strategies;
-
-        public Update(int productId)
+        private BaseApplicationDbContext<T> _context;
+        public Update(int productId, BaseApplicationDbContext<T> context)
         {
             InitializeComponent();
+            _context = context;
             _strategies = new Dictionary<PropertyInfo, IInputControlStrategy>();
-            _product = DbContextHelper.GetDbSet<T>().Find(productId)!;
+            //_product = DbContextHelper.GetDbSet<T>().Find(productId)!;
+            _product = _context.Set().Find(productId);
             GenerateForm();
             LoadData();
         }
@@ -76,7 +78,8 @@ namespace GenericForm.BaseModel
                         }
                     }
                 }
-                DbContextHelper.Context.SaveChanges();
+                //DbContextHelper.Context.SaveChanges();
+                _context.SaveChanges();
                 Close();
             }
             catch (Exception ex)

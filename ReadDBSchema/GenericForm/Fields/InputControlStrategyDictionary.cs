@@ -17,6 +17,8 @@ namespace GenericForm.Fields
                     return new NumericUpDownStrategy();
                 case "String":
                     return new TextBoxStrategy();
+                case "DateTime":
+                    return new DateTimeInputControlStrategy();
                 default:
                     throw new ArgumentException($"Unsupported property type: {propertyType}");
             }

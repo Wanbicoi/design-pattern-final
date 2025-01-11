@@ -27,26 +27,31 @@ namespace GenericForm.DBContext
         //public string TableName { get; set; } = "Products"; // Set table name to Product
     }
     public class ApplicationDbContext : DbContext
+
     {
+        private readonly string _databaseType;
+        private readonly string _connectionString;
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
 
-        public ApplicationDbContext()
+        public ApplicationDbContext(string databaseType, string connectionString)
         {
+            _databaseType = databaseType;
+            _connectionString = connectionString;
             Database.EnsureCreated();
             SeedData();
         }
 
         private void SeedData()
         {
-            if (!Users.Any())
-            {
-                Users.AddRange(
-                    new User { Name = "John Doe", Age = 30, ID = 3 },
-                    new User { Name = "Jane Smith", Age = 25, ID = 2 },
-                    new User { Name = "Peter Jones", Age = 40, ID = 1 }
-                );
-            }
+            //if (!Users.Any())
+            //{
+            //    Users.AddRange(
+            //        new User { Name = "John Doe", Age = 30, ID = 3 },
+            //        new User { Name = "Jane Smith", Age = 25, ID = 2 },
+            //        new User { Name = "Peter Jones", Age = 40, ID = 1 }
+            //    );
+            //}
             if (!Products.Any())
             {
                 Products.AddRange(
@@ -58,8 +63,30 @@ namespace GenericForm.DBContext
             SaveChanges();
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite($"Data Source={Environment.CurrentDirectory}/sqlite.db");
+        //protected override void OnConfiguring(DbContextOptionsBuilder options)
+        //    => options.UseSqlite($"Data Source={Environment.CurrentDirectory}/sqlite.db");
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (string.IsNullOrWhiteSpace(_databaseType) || string.IsNullOrWhiteSpace(_connectionString))
+            {
+                throw new InvalidOperationException("Database type or connection string is not provided.");
+            }
+
+            switch (_databaseType)
+            {
+                case "SQL Server":
+                    optionsBuilder.UseSqlServer(_connectionString);
+                    break;
+
+                case "PostgreSQL":
+                    optionsBuilder.UseNpgsql(_connectionString);
+                    break;
+
+                default:
+                    throw new NotSupportedException($"Database type '{_databaseType}' is not supported.");
+            }
+        }
 
         public void AddDynamicModelToDbContext(string modelName, Type modelType)
         {

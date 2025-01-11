@@ -1,5 +1,7 @@
 using System;
-using GenericForm;
+
+namespace GenericForm.DBContext
+{
 
 public class clients : IBaseModel
 {
@@ -10,6 +12,6 @@ public class clients : IBaseModel
     public String address { get; set; }
     public String phone { get; set; }
     public DateTime created_at { get; set; }
-    //public int ID { get; set; } // IBaseModel requirement
 
+}
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Reflection;
-using GenericForm;
+using GenericForm.DBContext;
 
 namespace Generater
 {

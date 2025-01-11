@@ -1,5 +1,5 @@
 using System;
-using GenericForm;
+using GenericForm.DBContext;
 
 public class doctor : IBaseModel
 {
