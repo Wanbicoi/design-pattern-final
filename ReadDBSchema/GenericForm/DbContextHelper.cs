@@ -1,5 +1,5 @@
 using GenericForm;
-using System;
+using Microsoft.EntityFrameworkCore;
 
 public static class DbContextHelper
 {
@@ -21,5 +21,10 @@ public static class DbContextHelper
     {
         _context?.Dispose();
         _context = null;
+    }
+
+    public static DbSet<T> GetDbSet<T>() where T : class
+    {
+        return Context.Set<T>();
     }
 }

@@ -2,15 +2,14 @@
 
 namespace GenericForm.Products
 {
-    public partial class List : Form
+    public partial class List<T> : Form where T : class, IBaseModel, new()
     {
-        private readonly DbSet<Product> _dbSet;
+        private readonly DbSet<T> _dbSet;
 
         public List()
         {
             InitializeComponent();
-            var _context = DbContextHelper.Context;
-            _dbSet = _context.Set<Product>();
+            _dbSet = DbContextHelper.GetDbSet<T>();
             _dbSet.Load();
             dataGridView.DataSource = _dbSet.Local.ToBindingList();
         }
@@ -20,7 +19,8 @@ namespace GenericForm.Products
             if (dataGridView.SelectedRows.Count == 0)
                 return;
 
-            var product = _dbSet.Find(dataGridView.SelectedRows[0].Cells[0].Value);
+            var id = (int)dataGridView.SelectedRows[0].Cells[0].Value;
+            var product = _dbSet.Find(id);
             if (product != null)
             {
                 _dbSet.Remove(product);
@@ -30,7 +30,7 @@ namespace GenericForm.Products
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new Create().ShowDialog();
+            new Create<T>().ShowDialog();
             dataGridView.Refresh();
         }
 
@@ -40,7 +40,7 @@ namespace GenericForm.Products
                 return;
 
             var id = (int)dataGridView.SelectedRows[0].Cells[0].Value;
-            new Update(id).ShowDialog();
+            new Update<T>(id).ShowDialog();
             dataGridView.Refresh();
         }
     }

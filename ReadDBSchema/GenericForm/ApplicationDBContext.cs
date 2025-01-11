@@ -37,7 +37,7 @@ namespace GenericForm
                 Users.AddRange(
                     new User { Name = "John Doe", Age = 30, ID = 3 },
                     new User { Name = "Jane Smith", Age = 25, ID = 2 },
-                    new User { Name = "Peter Jones", Age = 40 , ID = 1 }
+                    new User { Name = "Peter Jones", Age = 40, ID = 1 }
                 );
             }
             if (!Products.Any())

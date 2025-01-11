@@ -1,7 +1,7 @@
 ﻿
 namespace GenericForm.Products
 {
-    partial class List
+    partial class List<T> : Form where T : class, IBaseModel, new()
     {
         /// <summary>
         /// Required designer variable.

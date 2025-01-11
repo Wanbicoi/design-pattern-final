@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Windows.Forms;
 using GenericForm.Fields;
 using System.Linq;
 using System.Collections.Generic;
@@ -6,23 +7,20 @@ using System;
 
 namespace GenericForm.Products
 {
-    public partial class Update : Form
+    public partial class Create<T> : Form where T : class, IBaseModel, new()
     {
-        private readonly Product _product;
         private readonly Dictionary<PropertyInfo, IInputControlStrategy> _strategies;
 
-        public Update(int productId)
+        public Create()
         {
             InitializeComponent();
             _strategies = new Dictionary<PropertyInfo, IInputControlStrategy>();
-            _product = DbContextHelper.Context.Products.Find(productId)!;
-            GenerateForm();
-            LoadData();
+            GenerateFields();
         }
 
-        private void GenerateForm()
+        private void GenerateFields()
         {
-            var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.Name != "ID");
 
             foreach (var property in properties)
@@ -42,31 +40,13 @@ namespace GenericForm.Products
             flowLayoutPanel.Controls.Add(saveButton);
         }
 
-        private void LoadData()
-        {
-            var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.Name != "ID");
-
-            foreach (var property in properties)
-            {
-                if (_strategies.TryGetValue(property, out var strategy))
-                {
-                    var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
-                    if (control != null)
-                    {
-                        strategy.SetValue(property.GetValue(_product)!);
-                    }
-                }
-            }
-        }
-
         private void SaveButton_Click(object sender, EventArgs e)
         {
             try
             {
-                var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
                     .Where(p => p.Name != "ID");
-
+                var product = new T();
                 foreach (var property in properties)
                 {
                     if (_strategies.TryGetValue(property, out var strategy))
@@ -74,16 +54,20 @@ namespace GenericForm.Products
                         var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
                         if (control != null)
                         {
-                            property.SetValue(_product, strategy.GetValue());
+                            object value = strategy.GetValue();
+                            property.SetValue(product, value);
                         }
                     }
                 }
+
+                DbContextHelper.GetDbSet<T>().Add(product);
                 DbContextHelper.Context.SaveChanges();
+                MessageBox.Show("Product created successfully!");
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error updating product: {ex.Message}");
+                MessageBox.Show($"Error creating product: {ex.Message}");
             }
         }
     }
