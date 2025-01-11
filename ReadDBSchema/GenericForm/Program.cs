@@ -1,3 +1,5 @@
+using GenericForm.DBContext;
+
 namespace GenericForm
 {
     internal static class Program

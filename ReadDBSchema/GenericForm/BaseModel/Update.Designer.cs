@@ -1,4 +1,6 @@
-﻿namespace GenericForm.BaseModel
+﻿using GenericForm.DBContext;
+
+namespace GenericForm.BaseModel
 {
     partial class Update<T> : Form where T : class, IBaseModel, new()
     {

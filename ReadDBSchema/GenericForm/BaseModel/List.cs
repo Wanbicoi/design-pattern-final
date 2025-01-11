@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GenericForm.DBContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace GenericForm.BaseModel
 {

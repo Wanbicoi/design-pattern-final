@@ -1,4 +1,6 @@
 ﻿
+using GenericForm.DBContext;
+
 namespace GenericForm.BaseModel
 {
     partial class List<T> : Form where T : class, IBaseModel, new()

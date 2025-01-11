@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace GenericForm
+namespace GenericForm.DBContext
 {
 
     public interface IBaseModel

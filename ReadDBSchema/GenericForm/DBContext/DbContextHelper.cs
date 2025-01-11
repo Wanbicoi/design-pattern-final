@@ -1,4 +1,4 @@
-using GenericForm;
+using GenericForm.DBContext;
 using Microsoft.EntityFrameworkCore;
 
 public static class DbContextHelper
