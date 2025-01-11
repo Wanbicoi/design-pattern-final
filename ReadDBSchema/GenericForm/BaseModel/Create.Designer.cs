@@ -1,6 +1,8 @@
-﻿namespace GenericForm.Products
+﻿using GenericForm.DBContext;
+
+namespace GenericForm.BaseModel
 {
-    partial class Update
+    partial class Create<T> : Form where T : class, IBaseModel, new()
     {
         /// <summary>
         /// Required designer variable.
@@ -28,26 +30,27 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             flowLayoutPanel = new FlowLayoutPanel();
             SuspendLayout();
             // 
-            // flowLayoutPanel1
+            // flowLayoutPanel
             // 
             flowLayoutPanel.Dock = DockStyle.Fill;
             flowLayoutPanel.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel.Location = new Point(0, 0);
-            flowLayoutPanel.Name = "flowLayoutPanel1";
-            flowLayoutPanel.Size = new Size(268, 264);
+            flowLayoutPanel.Name = "flowLayoutPanel";
+            flowLayoutPanel.Size = new Size(258, 277);
             flowLayoutPanel.TabIndex = 0;
             // 
-            // Update
+            // Create
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(268, 264);
+            ClientSize = new Size(258, 277);
             Controls.Add(flowLayoutPanel);
-            Name = "Update";
-            Text = "Update";
+            Name = "Create";
+            Text = "Create";
             ResumeLayout(false);
         }
 

@@ -1,22 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GenericForm.DBContext;
+using Microsoft.EntityFrameworkCore;
 
-namespace GenericForm.Products
+namespace GenericForm.BaseModel
 {
-    public partial class List : Form
+    public partial class List<T> : Form where T : class, IBaseModel, new()
     {
-        private readonly DbSet<Product> _dbSet;
+        private readonly DbSet<T> _dbSet;
 
         public List()
         {
             InitializeComponent();
-            var _context = new ApplicationDbContext();
-            _dbSet = _context.Set<Product>();
-
-            LoadData();
-        }
-
-        private void LoadData()
-        {
+            _dbSet = DbContextHelper.GetDbSet<T>();
             _dbSet.Load();
             dataGridView.DataSource = _dbSet.Local.ToBindingList();
         }
@@ -26,7 +20,8 @@ namespace GenericForm.Products
             if (dataGridView.SelectedRows.Count == 0)
                 return;
 
-            var product = _dbSet.Find(dataGridView.SelectedRows[0].Cells[0].Value);
+            var id = (int)dataGridView.SelectedRows[0].Cells[0].Value;
+            var product = _dbSet.Find(id);
             if (product != null)
             {
                 _dbSet.Remove(product);
@@ -36,9 +31,8 @@ namespace GenericForm.Products
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var createForm = new Create();
-            createForm.ShowDialog();
-            LoadData(); // Reload the data from the database
+            new Create<T>().ShowDialog();
+            dataGridView.Refresh();
         }
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -47,8 +41,8 @@ namespace GenericForm.Products
                 return;
 
             var id = (int)dataGridView.SelectedRows[0].Cells[0].Value;
-            new Update(id).ShowDialog();
-            LoadData();
+            new Update<T>(id).ShowDialog();
+            dataGridView.Refresh();
         }
     }
 }
