@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace GenericForm.Products.Fields
+namespace GenericForm.Fields
 {
     public static class InputControlStrategyFactory
     {

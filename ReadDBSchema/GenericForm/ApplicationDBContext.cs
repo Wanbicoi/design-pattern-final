@@ -2,8 +2,6 @@
 
 namespace GenericForm
 {
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
     public interface IBaseModel
     {
@@ -25,6 +23,7 @@ using System.ComponentModel.DataAnnotations.Schema;
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Product> Products { get; set; }
+
         public ApplicationDbContext()
         {
             Database.EnsureCreated();
