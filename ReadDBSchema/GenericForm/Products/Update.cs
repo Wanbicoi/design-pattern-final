@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
 using GenericForm.Fields;
-using Microsoft.EntityFrameworkCore; 
+using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace GenericForm.Products
 {
     public partial class Update : Form
     {
-        private readonly ApplicationDbContext _context;
         private readonly Product _product;
         private readonly Dictionary<PropertyInfo, IInputControlStrategy> _strategies;
 
@@ -14,8 +15,7 @@ namespace GenericForm.Products
         {
             InitializeComponent();
             _strategies = new Dictionary<PropertyInfo, IInputControlStrategy>();
-            _context = new ApplicationDbContext();
-            _product = _context.Products.Find(productId)!;
+            _product = DbContextHelper.Context.Products.Find(productId)!;
             GenerateForm();
             LoadData();
         }
@@ -62,23 +62,29 @@ namespace GenericForm.Products
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.Name != "ID");
-
-            foreach (var property in properties)
+            try
             {
-                if (_strategies.TryGetValue(property, out var strategy))
+                var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(p => p.Name != "ID");
+
+                foreach (var property in properties)
                 {
-                    var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
-                    if (control != null)
+                    if (_strategies.TryGetValue(property, out var strategy))
                     {
-                        property.SetValue(_product, strategy.GetValue());
+                        var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
+                        if (control != null)
+                        {
+                            property.SetValue(_product, strategy.GetValue());
+                        }
                     }
                 }
+                DbContextHelper.Context.SaveChanges();
+                Close();
             }
-            //_context.Entry(_product).State = EntityState.Modified; // Added this line
-            _context.SaveChanges();
-            Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating product: {ex.Message}");
+            }
         }
     }
 }

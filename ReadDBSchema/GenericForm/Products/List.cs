@@ -9,7 +9,7 @@ namespace GenericForm.Products
         public List()
         {
             InitializeComponent();
-            var _context = new ApplicationDbContext();
+            var _context = DbContextHelper.Context;
             _dbSet = _context.Set<Product>();
             _dbSet.Load();
             dataGridView.DataSource = _dbSet.Local.ToBindingList();
@@ -41,7 +41,7 @@ namespace GenericForm.Products
 
             var id = (int)dataGridView.SelectedRows[0].Cells[0].Value;
             new Update(id).ShowDialog();
-            dataGridView.RefreshEdit();
+            dataGridView.Refresh();
         }
     }
 }

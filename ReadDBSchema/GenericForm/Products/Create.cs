@@ -3,19 +3,18 @@ using System.Windows.Forms;
 using GenericForm.Fields;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace GenericForm.Products
 {
     public partial class Create : Form
     {
-        private readonly ApplicationDbContext _context;
         private readonly Dictionary<PropertyInfo, IInputControlStrategy> _strategies;
 
         public Create()
         {
             InitializeComponent();
             _strategies = new Dictionary<PropertyInfo, IInputControlStrategy>();
-            _context = new ApplicationDbContext();
             GenerateFields();
         }
 
@@ -43,25 +42,33 @@ namespace GenericForm.Products
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.Name != "ID");
-            var product = new Product();
-            foreach (var property in properties)
+            try
             {
-                if (_strategies.TryGetValue(property, out var strategy))
+                var properties = typeof(Product).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(p => p.Name != "ID");
+                var product = new Product();
+                foreach (var property in properties)
                 {
-                    var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
-                    if (control != null)
+                    if (_strategies.TryGetValue(property, out var strategy))
                     {
-                        object value = strategy.GetValue();
-                        property.SetValue(product, value);
+                        var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
+                        if (control != null)
+                        {
+                            object value = strategy.GetValue();
+                            property.SetValue(product, value);
+                        }
                     }
                 }
-            }
 
-            _context.Products.Add(product);
-            _context.SaveChanges();
-            Close();
+                DbContextHelper.Context.Products.Add(product);
+                DbContextHelper.Context.SaveChanges();
+                MessageBox.Show("Product created successfully!");
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error creating product: {ex.Message}");
+            }
         }
     }
 }
