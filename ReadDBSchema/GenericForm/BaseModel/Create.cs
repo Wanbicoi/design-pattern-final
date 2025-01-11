@@ -63,7 +63,6 @@ namespace GenericForm.BaseModel
 
                 DbContextHelper.GetDbSet<T>().Add(product);
                 DbContextHelper.Context.SaveChanges();
-                MessageBox.Show("Product created successfully!");
                 Close();
             }
             catch (Exception ex)
