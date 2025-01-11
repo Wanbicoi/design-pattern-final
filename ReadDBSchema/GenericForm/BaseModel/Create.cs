@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 
-namespace GenericForm.Products
+namespace GenericForm.BaseModel
 {
     public partial class Create<T> : Form where T : class, IBaseModel, new()
     {

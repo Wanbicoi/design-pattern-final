@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using GenericForm.Fields;
 
-namespace GenericForm.Products
+namespace GenericForm.BaseModel
 {
     public partial class Update<T> : Form where T : class, IBaseModel, new()
     {

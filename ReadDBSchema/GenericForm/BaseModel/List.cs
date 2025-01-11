@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace GenericForm.Products
+namespace GenericForm.BaseModel
 {
     public partial class List<T> : Form where T : class, IBaseModel, new()
     {

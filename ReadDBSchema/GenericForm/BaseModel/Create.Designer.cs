@@ -1,4 +1,4 @@
-﻿namespace GenericForm.Products
+﻿namespace GenericForm.BaseModel
 {
     partial class Create<T> : Form where T : class, IBaseModel, new()
     {
