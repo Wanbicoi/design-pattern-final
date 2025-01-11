@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using System.Windows.Forms;
 using GenericForm.Fields;
+using Microsoft.EntityFrameworkCore; 
 
 namespace GenericForm.Products
 {
@@ -8,12 +8,14 @@ namespace GenericForm.Products
     {
         private readonly ApplicationDbContext _context;
         private readonly Product _product;
+        private readonly Dictionary<PropertyInfo, IInputControlStrategy> _strategies;
 
         public Update(int productId)
         {
             InitializeComponent();
+            _strategies = new Dictionary<PropertyInfo, IInputControlStrategy>();
             _context = new ApplicationDbContext();
-            _product = _context.Products.Find(productId);
+            _product = _context.Products.Find(productId)!;
             GenerateForm();
             LoadData();
         }
@@ -28,21 +30,11 @@ namespace GenericForm.Products
                 var label = new Label { Text = property.Name, AutoSize = true };
                 flowLayoutPanel.Controls.Add(label);
 
-                Control inputControl;
-                if (property.PropertyType == typeof(int))
-                {
-                    inputControl = new NumericUpDown { Width = 200 };
-                }
-                else if (property.PropertyType == typeof(string))
-                {
-                    inputControl = new TextBox { Width = 200 };
-                }
-                else
-                {
-                    throw new ArgumentException($"Unsupported property type: {property.PropertyType}");
-                }
+                var strategy = InputControlStrategyFactory.CreateStrategy(property.PropertyType);
+                Control inputControl = strategy.CreateControl(property);
                 inputControl.Name = property.Name + "Control";
                 flowLayoutPanel.Controls.Add(inputControl);
+                _strategies.Add(property, strategy);
             }
 
             var saveButton = new Button { Text = "Save", Width = 100 };
@@ -57,11 +49,13 @@ namespace GenericForm.Products
 
             foreach (var property in properties)
             {
-                var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
-                if (control != null)
+                if (_strategies.TryGetValue(property, out var strategy))
                 {
-                    var strategy = InputControlStrategyFactory.CreateStrategy(control);
-                    strategy.SetValue(control, property.GetValue(_product)!);
+                    var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
+                    if (control != null)
+                    {
+                        strategy.SetValue(property.GetValue(_product)!);
+                    }
                 }
             }
         }
@@ -73,13 +67,16 @@ namespace GenericForm.Products
 
             foreach (var property in properties)
             {
-                var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
-                if (control != null)
+                if (_strategies.TryGetValue(property, out var strategy))
                 {
-                    var strategy = InputControlStrategyFactory.CreateStrategy(control);
-                    property.SetValue(_product, strategy.GetValue(control));
+                    var control = flowLayoutPanel.Controls.Find(property.Name + "Control", true).FirstOrDefault();
+                    if (control != null)
+                    {
+                        property.SetValue(_product, strategy.GetValue());
+                    }
                 }
             }
+            //_context.Entry(_product).State = EntityState.Modified; // Added this line
             _context.SaveChanges();
             Close();
         }

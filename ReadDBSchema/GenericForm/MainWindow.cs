@@ -16,7 +16,7 @@ namespace GenericForm
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            new GenericForm.GenericForm<User>().ShowDialog();
+            //new GenericForm.GenericForm<User>().ShowDialog();
         }
     }
 }

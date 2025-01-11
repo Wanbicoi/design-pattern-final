@@ -11,12 +11,6 @@ namespace GenericForm.Products
             InitializeComponent();
             var _context = new ApplicationDbContext();
             _dbSet = _context.Set<Product>();
-
-            LoadData();
-        }
-
-        private void LoadData()
-        {
             _dbSet.Load();
             dataGridView.DataSource = _dbSet.Local.ToBindingList();
         }
@@ -36,9 +30,8 @@ namespace GenericForm.Products
 
         private void createToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var createForm = new Create();
-            createForm.ShowDialog();
-            LoadData(); // Reload the data from the database
+            new Create().ShowDialog();
+            dataGridView.Refresh();
         }
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -48,7 +41,7 @@ namespace GenericForm.Products
 
             var id = (int)dataGridView.SelectedRows[0].Cells[0].Value;
             new Update(id).ShowDialog();
-            LoadData();
+            dataGridView.RefreshEdit();
         }
     }
 }

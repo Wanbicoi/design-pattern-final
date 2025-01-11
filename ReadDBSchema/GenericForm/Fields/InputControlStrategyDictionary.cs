@@ -6,19 +6,19 @@ namespace GenericForm.Fields
 {
     public static class InputControlStrategyFactory
     {
-        public static IInputControlStrategy CreateStrategy(Control control)
+        public static IInputControlStrategy CreateStrategy(Type propertyType)
         {
-            if (control is NumericUpDown numericUpDown)
+            switch (propertyType.Name)
             {
-                return new NumericUpDownStrategy();
-            }
-            else if (control is TextBox textBox)
-            {
-                return new TextBoxStrategy();
-            }
-            else
-            {
-                throw new ArgumentException($"Unsupported control type: {control.GetType()}");
+                case "Int32":
+                case "Decimal":
+                case "Double":
+                case "Single":
+                    return new NumericUpDownStrategy();
+                case "String":
+                    return new TextBoxStrategy();
+                default:
+                    throw new ArgumentException($"Unsupported property type: {propertyType}");
             }
         }
     }
