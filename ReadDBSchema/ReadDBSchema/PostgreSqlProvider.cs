@@ -28,7 +28,7 @@ namespace ReadDBSchema
 
         }
 
-        public override string GetDatabaseName(string connectionString)
+        protected override string GetDatabaseName(string connectionString)
         {
             using (var connection = new NpgsqlConnection(connectionString))
             {
@@ -37,7 +37,7 @@ namespace ReadDBSchema
             }
         }
 
-        public override List<TableSchema> GetTables(string connectionString)
+        protected override List<TableSchema> GetTables(string connectionString)
         {
             var tables = new List<TableSchema>();
             var tableNames = GetTableNames(connectionString);

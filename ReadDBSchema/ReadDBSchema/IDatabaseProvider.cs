@@ -18,7 +18,10 @@ namespace ReadDBSchema
 
     public abstract class DatabaseProviderBase : IDatabaseProvider
     {
-        public abstract DatabaseSchema GetDatabaseSchema(string connectionString);
+        public abstract DatabaseSchema GetDatabaseSchema(string connectionString)
+        {
+
+        }
         public abstract bool CheckConnection(string connectionString);
         public string GetConnectionString(string username, string password, string address, string port, string databaseName)
         {

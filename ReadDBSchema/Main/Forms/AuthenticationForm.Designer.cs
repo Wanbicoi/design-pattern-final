@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             label1 = new Label();
-            ChangePasswordLinkLabel = new LinkLabel();
             Password = new Label();
             UsernameTextBox = new TextBox();
             PasswordTextBox = new TextBox();
@@ -44,16 +43,6 @@
             label1.Size = new Size(75, 20);
             label1.TabIndex = 0;
             label1.Text = "Username";
-            // 
-            // ChangePasswordLinkLabel
-            // 
-            ChangePasswordLinkLabel.AutoSize = true;
-            ChangePasswordLinkLabel.Location = new Point(428, 214);
-            ChangePasswordLinkLabel.Name = "ChangePasswordLinkLabel";
-            ChangePasswordLinkLabel.Size = new Size(126, 20);
-            ChangePasswordLinkLabel.TabIndex = 1;
-            ChangePasswordLinkLabel.TabStop = true;
-            ChangePasswordLinkLabel.Text = "Change password";
             // 
             // Password
             // 
@@ -87,6 +76,7 @@
             AccessTableButton.TabIndex = 5;
             AccessTableButton.Text = "Access Table";
             AccessTableButton.UseVisualStyleBackColor = true;
+            AccessTableButton.Click += AccessTableButton_Click;
             // 
             // AuthenticationForm
             // 
@@ -97,7 +87,6 @@
             Controls.Add(PasswordTextBox);
             Controls.Add(UsernameTextBox);
             Controls.Add(Password);
-            Controls.Add(ChangePasswordLinkLabel);
             Controls.Add(label1);
             Name = "AuthenticationForm";
             Text = "AuthenticationForm";
@@ -108,7 +97,6 @@
         #endregion
 
         private Label label1;
-        private LinkLabel ChangePasswordLinkLabel;
         private Label Password;
         private TextBox UsernameTextBox;
         private TextBox PasswordTextBox;

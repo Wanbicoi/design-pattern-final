@@ -53,5 +53,10 @@ namespace ReadDBSchema
         {
             return this.Provider.CreateUser(this.ConnectionString, username, password, tableName);
         }
+
+        public bool LoginAndGetPermission(string username, string password, out string tableName)
+        {
+            return this.Provider.LoginAndGetPermission(this.ConnectionString, username, password, out tableName);
+        }
     }
 }
