@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Npgsql;
 
 namespace ReadDBSchema
 {
-    internal class PostgreSqlProvider : IDatabaseProvider
+    internal class PostgreSqlProvider : DatabaseProviderBase
     {
-        public bool CheckConnection(string connectionString)
+        public override bool CheckConnection(string connectionString)
         {
             try
             {
@@ -25,21 +21,14 @@ namespace ReadDBSchema
                 return false;
             }
         }
-        public string GetConnectionString(string username, string password, string address, string port, string databaseName)
+        public override string GetConnectionString(string username, string password, string address, string port, string databaseName)
         {
-            // Server=127.0.0.1;Port=5432;Userid=u;Password=p;Protocol=3;SSL=false;Pooling=false;MinPoolSize=1;MaxPoolSize=20;Timeout=15;SslMode=Disable;Database=test"
             //return $"Server={address};Port={port};Userid={username};Password={password};Database={databaseName}";
             return "Server=127.0.0.1;Port=5432;Database=master_postgres;User Id=postgres;Password=Str0ngP@ssw0rd!;";
 
         }
-        public DatabaseSchema GetDatabaseSchema(string connectionString)
-        {
-            var databaseName = GetDatabaseName(connectionString);
-            var tables = GetTables(connectionString);
-            return new DatabaseSchema(databaseName, tables);
-        }
 
-        private string GetDatabaseName(string connectionString)
+        public override string GetDatabaseName(string connectionString)
         {
             using (var connection = new NpgsqlConnection(connectionString))
             {
@@ -48,7 +37,7 @@ namespace ReadDBSchema
             }
         }
 
-        private List<TableSchema> GetTables(string connectionString)
+        public override List<TableSchema> GetTables(string connectionString)
         {
             var tables = new List<TableSchema>();
             var tableNames = GetTableNames(connectionString);
@@ -133,6 +122,91 @@ namespace ReadDBSchema
             }
             return tableSchema;
         }
-    }
 
+        public override bool CreateUser(string connectionString, string username, string password, string tableName)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Create the role (user)
+                    string createUserQuery = $"CREATE ROLE {username} WITH LOGIN PASSWORD '{password}';";
+                    using (var createUserCommand = new NpgsqlCommand(createUserQuery, connection))
+                    {
+                        createUserCommand.ExecuteNonQuery();
+                    }
+
+                    // Grant privileges to the role on the specified table
+                    string grantPrivilegesQuery = $"GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE {tableName} TO {username};";
+                    using (var grantPrivilegesCommand = new NpgsqlCommand(grantPrivilegesQuery, connection))
+                    {
+                        grantPrivilegesCommand.ExecuteNonQuery();
+                    }
+
+                    // Commit changes
+                    string commitQuery = "COMMIT;";
+                    using (var commitCommand = new NpgsqlCommand(commitQuery, connection))
+                    {
+                        commitCommand.ExecuteNonQuery();
+                    }
+                }
+
+                return true; // Indicate success
+            }
+            catch (Exception ex)
+            {
+                return false; // Indicate failure
+            }
+        }
+
+        public override bool LoginAndGetPermission(string connectionString, string username, string password, out string tableName)
+        {
+            tableName = string.Empty;
+
+            try
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Kiểm tra tên người dùng và mật khẩu có hợp lệ không
+                    string checkUserQuery = $"SELECT 1 FROM pg_roles WHERE rolname = '{username}' AND rolpassword = crypt('{password}', rolpassword);";
+                    using (var cmd = new NpgsqlCommand(checkUserQuery, connection))
+                    {
+                        var result = cmd.ExecuteScalar();
+                        if (result == null)
+                        {
+                            return false;
+                        }
+                    }
+
+                    string getFirstTableQuery = @"
+                    SELECT table_name
+                    FROM information_schema.role_table_grants
+                    WHERE grantee = @username
+                    LIMIT 1;
+                ";
+
+                    using (var cmd = new NpgsqlCommand(getFirstTableQuery, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        var result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            tableName = result.ToString();
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            return false;
+        }
+
+    }
 }

@@ -28,23 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            GenerateButton = new Button();
             label1 = new Label();
             ConnectionStringTextBox = new TextBox();
             CheckConnectionButton = new Button();
             PreviousButton = new Button();
+            NextButton = new Button();
             SuspendLayout();
-            // 
-            // GenerateButton
-            // 
-            GenerateButton.Location = new Point(344, 244);
-            GenerateButton.Name = "GenerateButton";
-            GenerateButton.Size = new Size(94, 29);
-            GenerateButton.TabIndex = 0;
-            GenerateButton.Text = "Generate";
-            GenerateButton.UseVisualStyleBackColor = true;
-            GenerateButton.Visible = false;
-            GenerateButton.Click += Generate_Click;
             // 
             // label1
             // 
@@ -57,11 +46,11 @@
             // 
             // ConnectionStringTextBox
             // 
-            ConnectionStringTextBox.Location = new Point(184, 63);
+            ConnectionStringTextBox.Location = new Point(184, 65);
             ConnectionStringTextBox.Name = "ConnectionStringTextBox";
+            ConnectionStringTextBox.ReadOnly = true;
             ConnectionStringTextBox.Size = new Size(411, 27);
             ConnectionStringTextBox.TabIndex = 2;
-            ConnectionStringTextBox.ReadOnly = true;
             // 
             // CheckConnectionButton
             // 
@@ -83,28 +72,39 @@
             PreviousButton.UseVisualStyleBackColor = true;
             PreviousButton.Click += Previous_Click;
             // 
+            // NextButton
+            // 
+            NextButton.Location = new Point(632, 329);
+            NextButton.Name = "NextButton";
+            NextButton.Size = new Size(94, 29);
+            NextButton.TabIndex = 5;
+            NextButton.Text = "Next";
+            NextButton.UseVisualStyleBackColor = true;
+            NextButton.Click += NextButton_ClickHandler;
+            // 
             // DatabaseConnection
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(NextButton);
             Controls.Add(PreviousButton);
             Controls.Add(CheckConnectionButton);
             Controls.Add(ConnectionStringTextBox);
             Controls.Add(label1);
-            Controls.Add(GenerateButton);
             Name = "DatabaseConnection";
             Text = "DatabaseConnection";
             ResumeLayout(false);
             PerformLayout();
         }
 
-        #endregion
+       
 
-        private Button GenerateButton;
+        #endregion
         private Label label1;
         private TextBox ConnectionStringTextBox;
         private Button CheckConnectionButton;
         private Button PreviousButton;
+        private Button NextButton;
     }
 }

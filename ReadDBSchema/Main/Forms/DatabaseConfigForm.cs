@@ -59,7 +59,7 @@ namespace SimpleEnterprisesFramework
             DatabaseManagement databaseManagement = new DatabaseManagement(username, password, address, port, databaseName, databaseType);
             
             this.Hide();
-            var checkConnectionForm = new DatabaseConnection(this, username, password, address, port, databaseName, databaseType, databaseManagement);
+            var checkConnectionForm = new DatabaseConnection(this, databaseManagement);
             checkConnectionForm.Show();
         }
 

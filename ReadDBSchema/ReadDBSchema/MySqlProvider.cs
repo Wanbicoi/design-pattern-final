@@ -9,9 +9,9 @@ using MySql.Data.MySqlClient;
 
 namespace ReadDBSchema
 {
-    internal class MySqlProvider : IDatabaseProvider
+    internal class MySqlProvider : DatabaseProviderBase
     {
-        public bool CheckConnection(string connectionString)
+        public override bool CheckConnection(string connectionString)
         {
             try
             {
@@ -27,23 +27,13 @@ namespace ReadDBSchema
             }
         }
 
-        public string GetConnectionString(string username, string password, string address, string port, string databaseName)
+        public override string GetConnectionString(string username, string password, string address, string port, string databaseName)
         {
             //return $"Server={address};Port={port};Database={databaseName};User Id={username};Password={password};";
-
             return "Server=127.0.0.1;Port=3306;Database=master;User Id=root;Password=Str0ngP@ssw0rd!;";
-
-
         }
 
-        public DatabaseSchema GetDatabaseSchema(string connectionString)
-        {
-            var databaseName = GetDatabaseName(connectionString);
-            var tables = GetTables(connectionString);
-            return new DatabaseSchema(databaseName, tables);
-        }
-
-        private string GetDatabaseName(string connectionString)
+        protected override string GetDatabaseName(string connectionString)
         {
             using (var connection = new MySqlConnection(connectionString))
             {
@@ -52,7 +42,7 @@ namespace ReadDBSchema
             }
         }
 
-        private List<TableSchema> GetTables(string connectionString)
+        protected override List<TableSchema> GetTables(string connectionString)
         {
             var tables = new List<TableSchema>();
             var tableNames = GetTableNames(connectionString);
@@ -66,7 +56,7 @@ namespace ReadDBSchema
             return tables;
         }
 
-        private List<string> GetTableNames(string connectionString)
+       private List<string> GetTableNames(string connectionString)
         {
             var tableNames = new List<string>();
 
@@ -141,5 +131,93 @@ namespace ReadDBSchema
 
             return tableSchema;
         }
+
+        public override bool CreateUser(string connectionString, string username, string password, string tableName)
+        {
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Create the user
+                    string createUserQuery = $"CREATE USER '{username}'@'%' IDENTIFIED BY '{password}';";
+                    using (var createUserCommand = new MySqlCommand(createUserQuery, connection))
+                    {
+                        createUserCommand.ExecuteNonQuery();
+                    }
+
+                    // Grant privileges to the user on the specified table
+                    string grantPrivilegesQuery = $"GRANT SELECT, INSERT, UPDATE, DELETE ON {connection.Database}.{tableName} TO '{username}'@'%';";
+                    using (var grantPrivilegesCommand = new MySqlCommand(grantPrivilegesQuery, connection))
+                    {
+                        grantPrivilegesCommand.ExecuteNonQuery();
+                    }
+
+                    // Flush privileges to apply changes
+                    string flushPrivilegesQuery = "FLUSH PRIVILEGES;";
+                    using (var flushCommand = new MySqlCommand(flushPrivilegesQuery, connection))
+                    {
+                        flushCommand.ExecuteNonQuery();
+                    }
+                }
+
+                return true; 
+            }
+            catch (Exception ex)
+            {
+                return false; 
+            }
+        }
+
+        public override bool LoginAndGetPermission(string connectionString, string username, string password, out string tableName)
+        {
+            tableName = string.Empty;
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Kiểm tra tên người dùng và mật khẩu có hợp lệ không
+                    string checkUserQuery = $"SELECT 1 FROM mysql.user WHERE user = '{username}' AND authentication_string = PASSWORD('{password}');";
+                    using (var cmd = new MySqlCommand(checkUserQuery, connection))
+                    {
+                        var result = cmd.ExecuteScalar();
+                        if (result == null)
+                        {
+                            return false;
+                        }
+                    }
+
+                    string getFirstTableQuery = @"
+                    SELECT TABLE_NAME
+                    FROM information_schema.TABLE_PRIVILEGES
+                    WHERE GRANTEE = CONCAT('\'', @username, '\'@\'%\'' )
+                    LIMIT 1;
+                ";
+
+                    using (var cmd = new MySqlCommand(getFirstTableQuery, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@username", username);
+                        var result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            tableName = result.ToString();
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return false;
+
+        }
+
     }
 }
