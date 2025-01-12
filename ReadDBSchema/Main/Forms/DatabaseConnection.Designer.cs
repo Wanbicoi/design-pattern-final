@@ -81,6 +81,7 @@
             NextButton.Text = "Next";
             NextButton.UseVisualStyleBackColor = true;
             NextButton.Click += NextButton_ClickHandler;
+            NextButton.Visible = false;
             // 
             // DatabaseConnection
             // 

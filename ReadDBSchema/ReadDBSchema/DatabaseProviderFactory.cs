@@ -14,10 +14,23 @@ namespace ReadDBSchema
             {
                 case "PostgreSQL":
                     return new PostgreSqlProviderFactory().GetDatabaseProvider();
-                case "SQL Server":
-                    return new SqlServerProviderFactory().GetDatabaseProvider();
                 case "MySQL":
                     return new MySqlProviderFactory().GetDatabaseProvider();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static IDatabaseTypeMapper? GetDataTypeMapper(string databaseType)
+        {
+            switch (databaseType)
+            {
+                case "PostgreSQL":
+                    return new PostgreSqlTypeToCSharpMapper();
+                case "SQL Server":
+                    return new SqlServerTypeToCSharpMapper();
+                case "MySQL":
+                    return new MySqlTypeToCSharpMaperr();
                 default:
                     throw new NotImplementedException();
             }
@@ -32,13 +45,6 @@ namespace ReadDBSchema
         }
     }
 
-    internal class SqlServerProviderFactory : DatabaseProviderFactory
-    {
-        public IDatabaseProvider GetDatabaseProvider()
-        {
-            return new SqlServerProvider();
-        }
-    }
 
     internal class MySqlProviderFactory : DatabaseProviderFactory
     {

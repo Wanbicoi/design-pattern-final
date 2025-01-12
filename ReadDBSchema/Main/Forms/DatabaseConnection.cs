@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ReadDBSchema;
 using SimpleEnterprisesFramework;
+using Generater;
+using GenericForm;
+using Microsoft.EntityFrameworkCore;
+using MySqlX.XDevAPI;
+using GenericForm.DBContext;
+using System.Xml.Linq;
+using GenericForm.ModelForms;
 
 namespace Main.Forms
 {
@@ -31,18 +38,6 @@ namespace Main.Forms
             {
                 MessageBox.Show("Connection successful");
                 NextButton.Visible = true;
-                
-                // debug
-                DatabaseSchema schema = databaseManagement.GetDatabaseSchema();
-                List<TableSchema> tableSchemas = schema.GetTables();
-
-                string tmp = "";
-                foreach (TableSchema table in tableSchemas)
-                {
-                    tmp += table.ToString();
-                }
-
-                MessageBox.Show(tmp);
             }
             else
             {
@@ -54,6 +49,7 @@ namespace Main.Forms
         {
             this.Hide();
             ConfigForm.Show();
+
         }
 
         private void NextButton_ClickHandler(object sender, EventArgs e)

@@ -21,7 +21,7 @@ namespace ReadDBSchema
     {
         public DatabaseSchema GetDatabaseSchema(string connectionString)
         {
-            var databaseName = GetDataBaseName(connectionString);
+            var databaseName = GetDatabaseName(connectionString);
             var tables = GetTables(connectionString);
             return new DatabaseSchema(databaseName, tables);
         }
@@ -32,4 +32,6 @@ namespace ReadDBSchema
 
         protected abstract string GetDatabaseName(string connectionString);
         protected abstract List<TableSchema> GetTables(string connectionString);
+    }
 }
+

@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using GenericForm;
 using ReadDBSchema;
-
+using Generater.Generator;
 namespace Main.Forms
 {
     public partial class UserCredentialForm : Form
     {
 
-        private DatabaseManagement DatabaseManagement { get; }
+        private DatabaseManagement databaseManagement { get; }
 
         public UserCredentialForm(DatabaseManagement databaseManagement)
         {
             InitializeComponent();
-            DatabaseManagement = databaseManagement;
+            databaseManagement = databaseManagement;
         }
 
         private void CreateUser_Click(object sender, EventArgs e)
@@ -49,7 +41,7 @@ namespace Main.Forms
 
             string tableName = TableComboBox.SelectedItem.ToString();
 
-            if (DatabaseManagement.CreateUser(username, password, tableName))
+            if (databaseManagement.CreateUser(username, password, tableName))
             {
                 MessageBox.Show("User created successfully");
             }
@@ -66,7 +58,7 @@ namespace Main.Forms
 
         private void UserCredentialForm_Load(object sender, EventArgs e)
         {
-            DatabaseSchema schema = DatabaseManagement.GetDatabaseSchema();
+            DatabaseSchema schema = databaseManagement.GetDatabaseSchema();
             // get tables
             List<TableSchema> tables = schema.GetTables();
             List<string> tableNames = new List<string>();
@@ -81,7 +73,38 @@ namespace Main.Forms
 
         private void GenerateButton_Click(object sender, EventArgs e)
         {
+            DatabaseSchema dbSchema = databaseManagement.GetDatabaseSchema();
+            IDatabaseTypeMapper typeMapper = databaseManagement.GetDatabaseTypeMapper();
+            List<TableSchema> tableSchemas = dbSchema.GetTables();
+            foreach (TableSchema s in tableSchemas)
+            {
+                GenerateModel(s, typeMapper);
+            }
+            GenerateModelFormMapper(dbSchema, typeMapper);
 
+            this.Hide();
+            MainWindow mainWindow = new MainWindow(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
+            mainWindow.Show();
+
+        }
+
+        private void GenerateModel(TableSchema tableSchema, IDatabaseTypeMapper databaseTypeMapper)
+        {
+            // Generate the model class
+            var modelGenerator = new ModelGenerator(databaseTypeMapper);
+            modelGenerator.GenerateCode(tableSchema);
+
+            // Generate the ModelForm class
+            var modelFormGenerator = new ModelFormGenerator();
+            modelFormGenerator.GenerateCode(tableSchema);
+
+        }
+
+        private void GenerateModelFormMapper(DatabaseSchema databaseSchema, IDatabaseTypeMapper databaseTypeMapper)
+        {
+            // Generate the ModelFormMapper class after generating Model and ModelForm
+            var modelFormMapperGenerator = new ModelFormMapperGenerator();
+            modelFormMapperGenerator.GenerateCode(databaseSchema); // Generate ModelFormMapper
         }
     }
 }
