@@ -17,6 +17,23 @@ namespace GenericForm.BaseModel
             _dbSet = context.Set();
             _dbSet.Load();
             dataGridView.DataSource = _dbSet.Local.ToBindingList();
+            SetFormWidthEqualToGridView();
+        }
+
+        private void SetFormWidthEqualToGridView()
+        {
+            // Calculate total width of all columns
+            int totalWidth = 0;
+            foreach (DataGridViewColumn column in dataGridView.Columns)
+            {
+                totalWidth += column.Width;
+            }
+
+            // Add any additional padding (e.g., form borders, scrollbars, etc.)
+            totalWidth += 20;  // Adjust this value as needed for padding
+
+            // Set the form's width
+            this.Width = totalWidth;
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)

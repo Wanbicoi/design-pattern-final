@@ -49,6 +49,11 @@ namespace ReadDBSchema
         public bool IsNullable()
         {
             return isNullable;
-        } 
+        }
+
+        public bool IsPrimaryKey()
+        {
+            return isPrimaryKey;
+        }
     }
 }

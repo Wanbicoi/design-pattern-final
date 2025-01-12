@@ -96,9 +96,9 @@ namespace GenericForm.DBContext
     }
 
 
-    public class ClientsDbContext : BaseApplicationDbContext<clients>
-    {
-        public ClientsDbContext(string databaseType, string connectionString)
-            : base(databaseType, connectionString) { }
-    }
+    //public class ClientsDbContext : BaseApplicationDbContext<clients>
+    //{
+    //    public ClientsDbContext(string databaseType, string connectionString)
+    //        : base(databaseType, connectionString) { }
+    //}
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace GenericForm.DBContext
 {
@@ -7,6 +8,7 @@ namespace GenericForm.DBContext
     {
         //public int ID { get; set; }
         //public string TableName { get; set; }
+
     }
     public class User : IBaseModel
     {
@@ -20,11 +22,21 @@ namespace GenericForm.DBContext
     }
     public class Product : IBaseModel
     {
+        [Key]
         public int ID { get; set; }
         public string Name { get; set; } = default!;
         public int Age { get; set; }
         // Implement TableName property from IBaseModel interface
         //public string TableName { get; set; } = "Products"; // Set table name to Product
+
+        public string GetPrimaryKeyName()
+        {
+            var primaryKeyProperty = typeof(Product)
+                .GetProperties()
+                .FirstOrDefault(prop => prop.GetCustomAttributes(typeof(KeyAttribute), false).Any());
+
+            return primaryKeyProperty?.Name ?? "No primary key defined";
+        }
     }
     public class ApplicationDbContext : DbContext
 

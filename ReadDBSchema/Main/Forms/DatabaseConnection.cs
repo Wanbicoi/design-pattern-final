@@ -16,6 +16,7 @@ using MySqlX.XDevAPI;
 using GenericForm.DBContext;
 using System.Xml.Linq;
 using GenericForm.ModelForms;
+using Generater.Generator;
 
 namespace Main.Forms
 {
@@ -73,12 +74,14 @@ namespace Main.Forms
         private void Generate_Click(object sender, EventArgs e)
         {
             //MessageBox.Show("Not implemented yet");
-            //DatabaseSchema schema = databaseManagement.GetDatabaseSchema();
-            //List<TableSchema> tableSchemas = schema.GetTables();
-            //foreach (TableSchema s in tableSchemas)
-            //{
-            //    GenerateModel(s);
-            //} 
+            DatabaseSchema dbSchema = databaseManagement.GetDatabaseSchema();
+            IDatabaseTypeMapper typeMapper = databaseManagement.GetDatabaseTypeMapper();
+            List<TableSchema> tableSchemas = dbSchema.GetTables();
+            foreach (TableSchema s in tableSchemas)
+            {
+                GenerateModel(s, typeMapper);
+            }
+            GenerateModelFormMapper(dbSchema, typeMapper);
 
             this.Hide();
             MainWindow mainWindow = new MainWindow(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
@@ -92,18 +95,23 @@ namespace Main.Forms
 
         }
 
-        private void GenerateModel(TableSchema schema)
+        private void GenerateModel(TableSchema tableSchema, IDatabaseTypeMapper databaseTypeMapper)
         {
-            // Generate and save model code
-            Generater.Generator _generator = new Generator(this.databaseManagement.GetDatabaseTypeMapper());
-            var code =  _generator.GenerateModelCode(schema);
-            _generator.SaveGeneratedCode(schema.GetTableName(), code);
+            // Generate the model class
+            var modelGenerator = new ModelGenerator(databaseTypeMapper);
+            modelGenerator.GenerateCode(tableSchema);
 
-            // Compile and load
-            var assembly = RuntimeCompiler.CompileCode(code);
-            var modelType = assembly.GetType(schema.GetTableName());
+            // Generate the ModelForm class
+            var modelFormGenerator = new ModelFormGenerator();
+            modelFormGenerator.GenerateCode(tableSchema);
 
-            Console.WriteLine(modelType.Name);
+        }
+
+        private void GenerateModelFormMapper(DatabaseSchema databaseSchema, IDatabaseTypeMapper databaseTypeMapper)
+        {
+            // Generate the ModelFormMapper class after generating Model and ModelForm
+            var modelFormMapperGenerator = new ModelFormMapperGenerator();
+            modelFormMapperGenerator.GenerateCode(databaseSchema); // Generate ModelFormMapper
         }
 
     }

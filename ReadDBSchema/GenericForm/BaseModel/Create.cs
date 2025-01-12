@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using GenericForm.DBContext;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace GenericForm.BaseModel
 {
@@ -22,10 +23,20 @@ namespace GenericForm.BaseModel
             GenerateFields();
         }
 
+        public string GetPrimaryKeyName()
+        {
+            // Get all public instance properties
+            var property = typeof(T)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .FirstOrDefault(p => p.GetCustomAttributes(typeof(KeyAttribute), false).Any());
+
+            return property?.Name ?? "ID";
+        }
+
         private void GenerateFields()
         {
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.Name != "ID" && p.Name != "id");
+                .Where(p => p.Name != GetPrimaryKeyName());
 
             foreach (var property in properties)
             {
@@ -48,8 +59,10 @@ namespace GenericForm.BaseModel
         {
             try
             {
+               
+                
                 var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => p.Name != "ID" && p.Name != "id");
+                    .Where(p => p.Name != GetPrimaryKeyName());
                 var product = new T();
                 foreach (var property in properties)
                 {
