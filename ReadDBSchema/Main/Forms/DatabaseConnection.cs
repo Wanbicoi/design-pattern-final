@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using ReadDBSchema;
 using SimpleEnterprisesFramework;
 using Generater;
+using Generater.Builder;
 using GenericForm;
 using Microsoft.EntityFrameworkCore;
 using MySqlX.XDevAPI;
@@ -52,7 +53,7 @@ namespace Main.Forms
             {
                 MessageBox.Show("Connection successful");
                 GenerateButton.Visible = true;
-                
+
                 // debug
                 DatabaseSchema schema = databaseManagement.GetDatabaseSchema();
                 List<TableSchema> tableSchemas = schema.GetTables();
@@ -83,9 +84,14 @@ namespace Main.Forms
             }
             GenerateModelFormMapper(dbSchema, typeMapper);
 
-            this.Hide();
-            MainWindow mainWindow = new MainWindow(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
-            mainWindow.Show();
+
+            //MainWindow mainWindow = new MainWindow(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
+            //mainWindow.Show();
+
+            GenerateProgramCode(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
+            BuildGeneratedProject();
+            MessageBox.Show("Generate Sucess");
+
         }
 
         private void Previous_Click(object sender, EventArgs e)
@@ -112,6 +118,18 @@ namespace Main.Forms
             // Generate the ModelFormMapper class after generating Model and ModelForm
             var modelFormMapperGenerator = new ModelFormMapperGenerator();
             modelFormMapperGenerator.GenerateCode(databaseSchema); // Generate ModelFormMapper
+        }
+
+        private void GenerateProgramCode(string databaseType, string connectionString)
+        {
+            var programGenerator = new ProgramGenerator();
+            programGenerator.GenerateCode(databaseType, connectionString);
+        }
+
+        private void BuildGeneratedProject()
+        {
+            var projectBuiler = new ProjectBuilder();
+             projectBuiler.Main();
         }
 
     }

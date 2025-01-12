@@ -1,19 +1,13 @@
 using GenericForm.DBContext;
-
 namespace GenericForm
 {
-    internal static class Program
-    {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
-            //Application.Run(new MainWindow());
-        }
-    }
+internal static class Program
+{
+[STAThread]
+static void Main()
+{
+ApplicationConfiguration.Initialize();
+Application.Run(new MainWindow("SQL Server", "Data Source=HAICHANNGUYEN\\BI2425;Initial Catalog=winformdb;Integrated Security=True;Trust Server Certificate=True"));
+}
+}
 }
