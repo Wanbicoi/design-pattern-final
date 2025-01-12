@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace ReadDBSchema
 {
@@ -18,17 +19,17 @@ namespace ReadDBSchema
 
     public abstract class DatabaseProviderBase : IDatabaseProvider
     {
-        public abstract DatabaseSchema GetDatabaseSchema(string connectionString)
+        public DatabaseSchema GetDatabaseSchema(string connectionString)
         {
-
+            var databaseName = GetDataBaseName(connectionString);
+            var tables = GetTables(connectionString);
+            return new DatabaseSchema(databaseName, tables);
         }
         public abstract bool CheckConnection(string connectionString);
-        public string GetConnectionString(string username, string password, string address, string port, string databaseName)
-        {
-
-            return $"Server={address};Port={port};Database={databaseName};User Id={username};Password={password};";
-        }
+        public abstract string GetConnectionString(string username, string password, string address, string port, string databaseName);
         public abstract bool CreateUser(string connectionString, string username, string password, string tableName);
         public abstract bool LoginAndGetPermission(string connectionString, string username, string password, out string tableName);
-    }
+
+        protected abstract string GetDatabaseName(string connectionString);
+        protected abstract List<TableSchema> GetTables(string connectionString);
 }
