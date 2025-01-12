@@ -30,23 +30,30 @@ namespace ReadDBSchema
         public string GetConnectionString(string username, string password, string address, string port, string databaseName)
         {
 
-            string _username = "SA";
-            string _password = "Str0ngP@ssw0rd!";
-            string _address = "localhost";
-            string _port = "1433";
-            string _databaseName = "master";
+            //commented by Chan to test without docker
 
-            // Create an instance of SqlConnectionStringBuilder
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+            //string _username = "SA";
+            //string _password = "Str0ngP@ssw0rd!";
+            //string _address = "localhost";
+            //string _port = "1433";
+            //string _databaseName = "master";
 
-            // Set individual properties based on the input parameters
-            builder.DataSource = $"{_address},{_port}"; // Server address and port
-            builder.InitialCatalog = _databaseName;   // Database name
-            builder.UserID = _username;               // Username for authentication
-            builder.Password = _password;             // Password for authentication
+            //// Create an instance of SqlConnectionStringBuilder
+            //SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
 
-            // Return the constructed connection string
-            return builder.ConnectionString;
+            //// Set individual properties based on the input parameters
+            //builder.DataSource = $"{_address},{_port}"; // Server address and port
+            //builder.InitialCatalog = _databaseName;   // Database name
+            //builder.UserID = _username;               // Username for authentication
+            //builder.Password = _password;             // Password for authentication
+
+            //// Return the constructed connection string
+            //return builder.ConnectionString;
+
+
+
+            return "Data Source=HAICHANNGUYEN\\BI2425;Initial Catalog=winformdb;Integrated Security=True;Trust Server Certificate=True";
+
         }
 
 

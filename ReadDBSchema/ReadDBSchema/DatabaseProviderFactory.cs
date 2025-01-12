@@ -22,6 +22,21 @@ namespace ReadDBSchema
                     throw new NotImplementedException();
             }
         }
+
+        public static IDatabaseTypeMapper? GetDataTypeMapper(string databaseType)
+        {
+            switch (databaseType)
+            {
+                case "PostgreSQL":
+                    return new PostgreSqlTypeToCSharpMapper();
+                case "SQL Server":
+                    return new SqlServerTypeToCSharpMapper();
+                case "MySQL":
+                    return new MySqlTypeToCSharpMaperr();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 
     internal class PostgreSqlProviderFactory : DatabaseProviderFactory

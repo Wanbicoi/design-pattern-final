@@ -8,17 +8,31 @@ namespace GenericForm.Fields
     {
         public static IInputControlStrategy CreateStrategy(Type propertyType)
         {
-            switch (propertyType.Name)
+            Type actualType = propertyType;
+            // Check if the type is nullable and extract the underlying type
+            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                case "Int32":
-                case "Decimal":
-                case "Double":
-                case "Single":
+                actualType = Nullable.GetUnderlyingType(propertyType);
+            }
+            switch (actualType.FullName)
+            {
+                case "System.Int32":
+                case "System.Decimal":
+                case "System.Double":
+                case "System.Single":
                     return new NumericUpDownStrategy();
-                case "String":
+
+                case "System.String":
                     return new TextBoxStrategy();
+
+                case "System.DateTime":
+                    return new DateTimeInputControlStrategy();
+
+                case "System.Boolean":
+                    return new CheckboxBooleanStrategy();
+
                 default:
-                    throw new ArgumentException($"Unsupported property type: {propertyType}");
+                    throw new ArgumentException($"Unsupported property type: {actualType.FullName}");
             }
         }
     }

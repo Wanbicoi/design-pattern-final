@@ -5,24 +5,38 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using GenericForm.DBContext;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace GenericForm.BaseModel
 {
     public partial class Create<T> : Form where T : class, IBaseModel, new()
     {
         private readonly Dictionary<PropertyInfo, IInputControlStrategy> _strategies;
+        private BaseApplicationDbContext<T> _context;
 
-        public Create()
+        public Create(BaseApplicationDbContext<T> context)
         {
+            _context = context;
             InitializeComponent();
             _strategies = new Dictionary<PropertyInfo, IInputControlStrategy>();
             GenerateFields();
         }
 
+        public string GetPrimaryKeyName()
+        {
+            // Get all public instance properties
+            var property = typeof(T)
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .FirstOrDefault(p => p.GetCustomAttributes(typeof(KeyAttribute), false).Any());
+
+            return property?.Name ?? "ID";
+        }
+
         private void GenerateFields()
         {
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(p => p.Name != "ID");
+                .Where(p => p.Name != GetPrimaryKeyName());
 
             foreach (var property in properties)
             {
@@ -45,8 +59,10 @@ namespace GenericForm.BaseModel
         {
             try
             {
+               
+                
                 var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => p.Name != "ID");
+                    .Where(p => p.Name != GetPrimaryKeyName());
                 var product = new T();
                 foreach (var property in properties)
                 {
@@ -61,8 +77,11 @@ namespace GenericForm.BaseModel
                     }
                 }
 
-                DbContextHelper.GetDbSet<T>().Add(product);
-                DbContextHelper.Context.SaveChanges();
+                //DbContextHelper.GetDbSet<T>().Add(product);
+                //DbContextHelper.Context.SaveChanges();
+
+                _context.Set().Add(product);
+                _context.SaveChanges();
                 Close();
             }
             catch (Exception ex)
