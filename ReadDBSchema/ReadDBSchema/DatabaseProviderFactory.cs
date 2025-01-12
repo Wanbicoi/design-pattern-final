@@ -27,8 +27,6 @@ namespace ReadDBSchema
             {
                 case "PostgreSQL":
                     return new PostgreSqlTypeToCSharpMapper();
-                case "SQL Server":
-                    return new SqlServerTypeToCSharpMapper();
                 case "MySQL":
                     return new MySqlTypeToCSharpMaperr();
                 default:

@@ -87,8 +87,8 @@ namespace GenericForm.DBContext
 
             switch (_databaseType)
             {
-                case "SQL Server":
-                    optionsBuilder.UseSqlServer(_connectionString);
+                case "MySQL":
+                    optionsBuilder.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString));
                     break;
 
                 case "PostgreSQL":

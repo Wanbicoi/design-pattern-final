@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
 
 
 namespace GenericForm.DBContext
@@ -35,8 +33,8 @@ namespace GenericForm.DBContext
 
             switch (_databaseType)
             {
-                case "SQL Server":
-                    optionsBuilder.UseSqlServer(_connectionString);
+                case "MySQL":
+                    optionsBuilder.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString));
                     break;
 
                 case "PostgreSQL":

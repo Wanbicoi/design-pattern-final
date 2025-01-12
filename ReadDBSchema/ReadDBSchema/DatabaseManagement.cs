@@ -12,7 +12,7 @@ namespace ReadDBSchema
     {
         public static List<string> GetDatabaseTypes()
         {
-            return new List<string> {"MySQL", "PostgreSQL", "SQL Server"};
+            return new List<string> { "MySQL", "PostgreSQL" };
         }
     }
 

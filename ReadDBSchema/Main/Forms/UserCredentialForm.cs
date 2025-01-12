@@ -1,6 +1,7 @@
 ﻿using GenericForm;
 using ReadDBSchema;
 using Generater.Generator;
+using System.Diagnostics;
 namespace Main.Forms
 {
     public partial class UserCredentialForm : Form
@@ -83,8 +84,13 @@ namespace Main.Forms
             GenerateModelFormMapper(dbSchema, typeMapper);
 
             this.Hide();
-            MainWindow mainWindow = new MainWindow(databaseManagement.GetDatabaseType(), databaseManagement.GetConnectionString());
-            mainWindow.Show();
+
+            // After 
+
+            // save database connection string va database type
+            string connectionString = databaseManagement.GetConnectionString();
+            string databaseType = databaseManagement.GetDatabaseType();
+
 
         }
 
@@ -105,6 +111,117 @@ namespace Main.Forms
             // Generate the ModelFormMapper class after generating Model and ModelForm
             var modelFormMapperGenerator = new ModelFormMapperGenerator();
             modelFormMapperGenerator.GenerateCode(databaseSchema); // Generate ModelFormMapper
+        }
+
+    }
+
+
+    public static class ProjectGenerator
+    {
+        public static void CreateProject(string projectName, string destinationPath, string sourceLibraryPath)
+        {
+            // Ensure the destination path exists
+            if (!Directory.Exists(destinationPath))
+            {
+                Directory.CreateDirectory(destinationPath);
+            }
+
+            // Create the project using dotnet CLI
+            RunCommand("dotnet", $"new winforms -n {projectName} -o {destinationPath}");
+
+            // Copy the GenerateForm library to the new project
+            string targetLibraryPath = Path.Combine(destinationPath, projectName, "GenerateForm");
+            CopyDirectory(sourceLibraryPath, targetLibraryPath);
+
+            // Add the library reference to the project file
+            string projectFilePath = Path.Combine(destinationPath, projectName, $"{projectName}.csproj");
+            AddLibraryReference(projectFilePath, targetLibraryPath);
+        }
+
+        private static void RunCommand(string command, string arguments)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = command,
+                    Arguments = arguments,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
+
+            if (process.ExitCode != 0)
+            {
+                throw new Exception($"Command '{command} {arguments}' failed with exit code {process.ExitCode}");
+            }
+        }
+
+        private static void CopyDirectory(string sourceDir, string destinationDir)
+        {
+            if (!Directory.Exists(sourceDir))
+            {
+                throw new DirectoryNotFoundException($"Source directory not found: {sourceDir}");
+            }
+
+            if (!Directory.Exists(destinationDir))
+            {
+                Directory.CreateDirectory(destinationDir);
+            }
+
+            foreach (var file in Directory.GetFiles(sourceDir))
+            {
+                var destFile = Path.Combine(destinationDir, Path.GetFileName(file));
+                File.Copy(file, destFile, true);
+            }
+
+            foreach (var directory in Directory.GetDirectories(sourceDir))
+            {
+                var destDirectory = Path.Combine(destinationDir, Path.GetFileName(directory));
+                CopyDirectory(directory, destDirectory);
+            }
+        }
+
+        private static void AddLibraryReference(string projectFilePath, string libraryPath)
+        {
+            var projectFileContent = File.ReadAllText(projectFilePath);
+            var reference = $@"
+  <ItemGroup>
+    <Compile Include=""{libraryPath}\**\*.cs"" />
+  </ItemGroup>";
+
+            var insertIndex = projectFileContent.IndexOf("</Project>");
+            projectFileContent = projectFileContent.Insert(insertIndex, reference);
+            File.WriteAllText(projectFilePath, projectFileContent);
+        }
+
+        public static void SaveDatabaseConfig(string filePath, string connectionString, string databaseType)
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                writer.WriteLine(connectionString);
+                writer.WriteLine(databaseType);
+            }
+        }
+
+        public static (string connectionString, string databaseType) LoadDatabaseConfig(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"The file at {filePath} was not found.");
+            }
+
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string connectionString = reader.ReadLine();
+                string databaseType = reader.ReadLine();
+                return (connectionString, databaseType);
+            }
         }
     }
 }

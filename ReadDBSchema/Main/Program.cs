@@ -2,6 +2,7 @@ using SimpleEnterprisesFramework;
 
 namespace Main
 {
+
     internal static class Program
     {
         /// <summary>
