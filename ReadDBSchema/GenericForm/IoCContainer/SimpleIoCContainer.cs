@@ -2,10 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class SimpleIoCContainer : IDisposable
+public sealed class SimpleIoCContainer : IDisposable
 {
+    private static readonly Lazy<SimpleIoCContainer> _instance = new(() => new SimpleIoCContainer());
+
+    public static SimpleIoCContainer Instance => _instance.Value;
+
     private readonly Dictionary<(Type, string?), Func<object>> _registrations = new();
     private readonly List<object> _instances = new();
+
+    // Private constructor to prevent external instantiation
+    private SimpleIoCContainer() { }
 
     // Register with a name
     public void Register<TService>(Func<object> factory, string? name = null)
@@ -30,7 +37,7 @@ public class SimpleIoCContainer : IDisposable
             $"Service of type {typeof(TService)} with name '{name}' is not registered.");
     }
 
-    public object Resolve(Type type, string name = null)
+    public object Resolve(Type type, string? name = null)
     {
         if (_registrations.TryGetValue((type, name), out var factory))
         {
@@ -43,9 +50,8 @@ public class SimpleIoCContainer : IDisposable
         }
 
         throw new InvalidOperationException(
-           $"Service of type {type} with name '{name}' is not registered.");
+            $"Service of type {type} with name '{name}' is not registered.");
     }
-
 
     // Dispose all disposable instances
     public void Dispose()
