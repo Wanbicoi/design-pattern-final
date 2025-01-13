@@ -31,6 +31,14 @@ namespace ReadDBSchema
             this.DatabaseTypeMapper = DatabaseProviderFactory.GetDataTypeMapper(databaseType);
         }
 
+        public DatabaseManagement(string conn, string databaseType)
+        {
+            this.Provider = DatabaseProviderFactory.GetDatabaseProvider(databaseType);
+            this.ConnectionString = conn;
+            this.DatabaseType = databaseType;
+            this.DatabaseTypeMapper = DatabaseProviderFactory.GetDataTypeMapper(databaseType);
+        }
+
         public bool CheckConnection()
         {
             return this.Provider.CheckConnection(this.ConnectionString);

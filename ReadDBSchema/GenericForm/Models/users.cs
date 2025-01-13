@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GenericForm.DBContext
 {
-public class products : IBaseModel
+public class users : IBaseModel
 {
 [Key]
     public Int32 id { get; set; }
-    public String product_name { get; set; }
-    public Decimal price { get; set; }
+    public String username { get; set; }
+    public String email { get; set; }
 }
 }

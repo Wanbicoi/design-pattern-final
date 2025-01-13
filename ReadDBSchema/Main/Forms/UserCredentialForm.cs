@@ -9,10 +9,10 @@ namespace Main.Forms
 
         private DatabaseManagement databaseManagement { get; }
 
-        public UserCredentialForm(DatabaseManagement databaseManagement)
+        public UserCredentialForm(string connectionString, string databaseType)
         {
             InitializeComponent();
-            databaseManagement = databaseManagement;
+            databaseManagement = new DatabaseManagement(connectionString, databaseType);
         }
 
         private void CreateUser_Click(object sender, EventArgs e)
@@ -77,20 +77,23 @@ namespace Main.Forms
             DatabaseSchema dbSchema = databaseManagement.GetDatabaseSchema();
             IDatabaseTypeMapper typeMapper = databaseManagement.GetDatabaseTypeMapper();
             List<TableSchema> tableSchemas = dbSchema.GetTables();
+            
             foreach (TableSchema s in tableSchemas)
             {
-                GenerateModel(s, typeMapper);
+                GenerateModel(s, typeMapper); // class generation
             }
-            GenerateModelFormMapper(dbSchema, typeMapper);
+            GenerateModelFormMapper(dbSchema, typeMapper); 
 
             this.Hide();
 
-            // After 
-
-            // save database connection string va database type
             string connectionString = databaseManagement.GetConnectionString();
             string databaseType = databaseManagement.GetDatabaseType();
 
+            AuthenticationForm authenticationForm = new AuthenticationForm(connectionString, databaseType);
+            authenticationForm.Show();
+
+            //MainWindow mainWindow = new MainWindow(connectionString, databaseType);
+            //mainWindow.Show();
 
         }
 

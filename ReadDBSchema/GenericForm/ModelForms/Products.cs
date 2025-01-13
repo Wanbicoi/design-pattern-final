@@ -4,9 +4,9 @@ using System.ComponentModel;
 
 namespace GenericForm.ModelForms
 {
-    public partial class Products : BaseModel.List<DBContext.Products>
+    public partial class products : BaseModel.List<DBContext.products>
     {
-        public Products(BaseApplicationDbContext<DBContext.Products> dbContext) : base(dbContext)
+        public products(BaseApplicationDbContext<DBContext.products> dbContext) : base(dbContext)
         {
             InitializeComponent();
         }
@@ -26,8 +26,7 @@ namespace GenericForm.ModelForms
         {
             this.components = new Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            //this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Products";
+            this.Text = "products";
         }
     }
 }

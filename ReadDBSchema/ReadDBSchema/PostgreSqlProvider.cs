@@ -23,8 +23,8 @@ namespace ReadDBSchema
         }
         public override string GetConnectionString(string username, string password, string address, string port, string databaseName)
         {
-            //return $"Server={address};Port={port};Userid={username};Password={password};Database={databaseName}";
-            return "Server=127.0.0.1;Port=5432;Database=master_postgres;User Id=postgres;Password=Str0ngP@ssw0rd!;";
+            return $"Server={address};Port={port};Userid={username};Password={password};Database={databaseName}";
+            //return "Server=127.0.0.1;Port=5432;Database=master_postgres;User Id=postgres;Password=Str0ngP@ssw0rd!;";
 
         }
 
@@ -131,63 +131,51 @@ namespace ReadDBSchema
                 {
                     connection.Open();
 
-                    // Create the role (user)
-                    string createUserQuery = $"CREATE ROLE {username} WITH LOGIN PASSWORD '{password}';";
-                    using (var createUserCommand = new NpgsqlCommand(createUserQuery, connection))
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        createUserCommand.ExecuteNonQuery();
-                    }
+                        // Tạo user (role) với mật khẩu
+                        string createUserQuery = $"CREATE ROLE {username} WITH LOGIN PASSWORD '{password}';";
+                        using (var createUserCommand = new NpgsqlCommand(createUserQuery, connection, transaction))
+                        {
+                            createUserCommand.ExecuteNonQuery();
+                        }
 
-                    // Grant privileges to the role on the specified table
-                    string grantPrivilegesQuery = $"GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE {tableName} TO {username};";
-                    using (var grantPrivilegesCommand = new NpgsqlCommand(grantPrivilegesQuery, connection))
-                    {
-                        grantPrivilegesCommand.ExecuteNonQuery();
-                    }
-
-                    // Commit changes
-                    string commitQuery = "COMMIT;";
-                    using (var commitCommand = new NpgsqlCommand(commitQuery, connection))
-                    {
-                        commitCommand.ExecuteNonQuery();
+                        // Commit the transaction
+                        transaction.Commit();
                     }
                 }
 
-                return true; // Indicate success
+                return true; // Thành công
             }
             catch (Exception ex)
             {
-                return false; // Indicate failure
+                Console.WriteLine($"Error creating user: {ex.Message}");
+                return false; // Thất bại
             }
         }
 
         public override bool LoginAndGetPermission(string connectionString, string username, string password, out string tableName)
         {
             tableName = string.Empty;
-
             try
             {
-                using (var connection = new NpgsqlConnection(connectionString))
+                // Create a new connection string with the provided username and password
+                var loginConnectionString = new NpgsqlConnectionStringBuilder(connectionString)
+                {
+                    Username = username,
+                    Password = password
+                }.ConnectionString;
+
+                using (var connection = new NpgsqlConnection(loginConnectionString))
                 {
                     connection.Open();
 
-                    // Kiểm tra tên người dùng và mật khẩu có hợp lệ không
-                    string checkUserQuery = $"SELECT 1 FROM pg_roles WHERE rolname = '{username}' AND rolpassword = crypt('{password}', rolpassword);";
-                    using (var cmd = new NpgsqlCommand(checkUserQuery, connection))
-                    {
-                        var result = cmd.ExecuteScalar();
-                        if (result == null)
-                        {
-                            return false;
-                        }
-                    }
-
+                    // If the connection is successful, the login credentials are valid
                     string getFirstTableQuery = @"
                     SELECT table_name
-                    FROM information_schema.role_table_grants
+                    FROM information_schema.table_privileges
                     WHERE grantee = @username
-                    LIMIT 1;
-                ";
+                    LIMIT 1;";
 
                     using (var cmd = new NpgsqlCommand(getFirstTableQuery, connection))
                     {
@@ -205,8 +193,8 @@ namespace ReadDBSchema
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
+
             return false;
         }
-
     }
 }

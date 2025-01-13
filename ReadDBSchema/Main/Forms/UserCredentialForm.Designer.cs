@@ -35,7 +35,6 @@
             button1 = new Button();
             GenerateButton = new Button();
             TableComboBox = new ComboBox();
-            label3 = new Label();
             SuspendLayout();
             // 
             // label1
@@ -83,7 +82,7 @@
             // 
             // GenerateButton
             // 
-            GenerateButton.Location = new Point(356, 385);
+            GenerateButton.Location = new Point(356, 365);
             GenerateButton.Name = "GenerateButton";
             GenerateButton.Size = new Size(94, 29);
             GenerateButton.TabIndex = 6;
@@ -98,22 +97,13 @@
             TableComboBox.Name = "TableComboBox";
             TableComboBox.Size = new Size(193, 28);
             TableComboBox.TabIndex = 7;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(203, 203);
-            label3.Name = "label3";
-            label3.Size = new Size(44, 20);
-            label3.TabIndex = 8;
-            label3.Text = "Table";
+            TableComboBox.Visible = false;
             // 
             // UserCredentialForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(label3);
             Controls.Add(TableComboBox);
             Controls.Add(GenerateButton);
             Controls.Add(button1);
@@ -137,6 +127,5 @@
         private Button button1;
         private Button GenerateButton;
         private ComboBox TableComboBox;
-        private Label label3;
     }
 }

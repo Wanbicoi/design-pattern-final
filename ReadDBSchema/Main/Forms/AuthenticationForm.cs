@@ -1,29 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using GenericForm;
 using ReadDBSchema;
 
 namespace Main.Forms
 {
     public partial class AuthenticationForm : Form
     {
-        private DatabaseManagement DatabaseManagement;
-        public AuthenticationForm(DatabaseManagement databaseManagement)
+        private string connectionString { get; }
+        private string databaseType { get; }
+        public AuthenticationForm(string connectionString, string databaseType)
         {
-            DatabaseManagement = databaseManagement;
             InitializeComponent();
+            this.connectionString = connectionString;
+            this.databaseType = databaseType;
         }
 
         private void AccessTableButton_Click(object sender, EventArgs e)
         {
-            string username = UsernameTextBox.Text;
-            string password = PasswordTextBox.Text;
+            string username = UsernameTextBox.Text.Trim();
+            string password = PasswordTextBox.Text.Trim();
+
+            MessageBox.Show("Username: " + username + " Password: " + password);
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
@@ -31,31 +27,36 @@ namespace Main.Forms
                 return;
             }
 
-            if (Validator.IsValidUsername(username))
+            if (!Validator.IsValidUsername(username))
             {
                 MessageBox.Show("Invalid username");
                 return;
             }
 
-            if (Validator.IsValidPassword(password))
+            if (!Validator.IsValidPassword(password))
             {
                 MessageBox.Show("Invalid password");
                 return;
             }
 
             string tableName;
-            bool loginSuccess = DatabaseManagement.LoginAndGetPermission(username, password, out tableName);
+            
+            DatabaseManagement dbManagement = new DatabaseManagement(connectionString, databaseType);
+
+            bool loginSuccess = dbManagement.LoginAndGetPermission(username, password, out tableName);
             if (loginSuccess)
             {
-                MessageBox.Show("Login successful. You have access to table: " + tableName);
-                // TODO: Open CRUD form with access to table
-
+                MessageBox.Show("Login successful");
+                MainWindow mainWindow = new MainWindow(connectionString, databaseType);
+                mainWindow.Show();
                 return;
             }
             else
             {
                 MessageBox.Show("Login failed. Please check your username and password.");
             }
+
+           
         }
     }
 }

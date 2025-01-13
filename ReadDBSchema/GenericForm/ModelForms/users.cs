@@ -4,9 +4,9 @@ using System.ComponentModel;
 
 namespace GenericForm.ModelForms
 {
-    public partial class School : BaseModel.List<DBContext.School>
+    public partial class users : BaseModel.List<DBContext.users>
     {
-        public School(BaseApplicationDbContext<DBContext.School> dbContext) : base(dbContext)
+        public users(BaseApplicationDbContext<DBContext.users> dbContext) : base(dbContext)
         {
             InitializeComponent();
         }
@@ -26,7 +26,7 @@ namespace GenericForm.ModelForms
         {
             this.components = new Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "School";
+            this.Text = "users";
         }
     }
 }

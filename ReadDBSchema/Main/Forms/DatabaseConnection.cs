@@ -54,7 +54,9 @@ namespace Main.Forms
 
         private void NextButton_ClickHandler(object sender, EventArgs e)
         {
-            UserCredentialForm userCredentialForm = new UserCredentialForm(this.databaseManagement);
+            string connectionString = databaseManagement.GetConnectionString();
+            string databaseType = databaseManagement.GetDatabaseType();
+            UserCredentialForm userCredentialForm = new UserCredentialForm(connectionString, databaseType);
 
             this.Hide();
             userCredentialForm.Show();

@@ -15,7 +15,7 @@ namespace GenericForm.DBContext
         private readonly string _connectionString;
 
         // Constructor to accept database configuration dynamically
-        public BaseApplicationDbContext(string databaseType, string connectionString)
+        public BaseApplicationDbContext(string connectionString, string databaseType)
         {
             _databaseType = databaseType;
             _connectionString = connectionString;

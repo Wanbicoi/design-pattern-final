@@ -29,8 +29,8 @@ namespace ReadDBSchema
 
         public override string GetConnectionString(string username, string password, string address, string port, string databaseName)
         {
-            //return $"Server={address};Port={port};Database={databaseName};User Id={username};Password={password};";
-            return "Server=127.0.0.1;Port=3306;Database=master;User Id=root;Password=Str0ngP@ssw0rd!;";
+            return $"Server={address};Port={port};Database={databaseName};User Id={username};Password={password};";
+            //return "Server=127.0.0.1;Port=3306;Database=master;User Id=root;Password=Str0ngP@ssw0rd!;";
         }
 
         protected override string GetDatabaseName(string connectionString)
@@ -132,71 +132,52 @@ namespace ReadDBSchema
             return tableSchema;
         }
 
-        public override bool CreateUser(string connectionString, string username, string password, string tableName)
+        public override bool CreateUser(string connectionString, string username, string password, string databaseName)
         {
             try
             {
                 using (var connection = new MySqlConnection(connectionString))
                 {
                     connection.Open();
-
-                    // Create the user
+                    // Tạo user
                     string createUserQuery = $"CREATE USER '{username}'@'%' IDENTIFIED BY '{password}';";
                     using (var createUserCommand = new MySqlCommand(createUserQuery, connection))
                     {
                         createUserCommand.ExecuteNonQuery();
                     }
-
-                    // Grant privileges to the user on the specified table
-                    string grantPrivilegesQuery = $"GRANT SELECT, INSERT, UPDATE, DELETE ON {connection.Database}.{tableName} TO '{username}'@'%';";
-                    using (var grantPrivilegesCommand = new MySqlCommand(grantPrivilegesQuery, connection))
-                    {
-                        grantPrivilegesCommand.ExecuteNonQuery();
-                    }
-
-                    // Flush privileges to apply changes
-                    string flushPrivilegesQuery = "FLUSH PRIVILEGES;";
-                    using (var flushCommand = new MySqlCommand(flushPrivilegesQuery, connection))
-                    {
-                        flushCommand.ExecuteNonQuery();
-                    }
                 }
-
-                return true; 
+                return true;
             }
             catch (Exception ex)
             {
-                return false; 
+                Console.WriteLine($"Error creating user: {ex.Message}");
+                return false;
             }
         }
+
 
         public override bool LoginAndGetPermission(string connectionString, string username, string password, out string tableName)
         {
             tableName = string.Empty;
-
             try
             {
-                using (var connection = new MySqlConnection(connectionString))
+                // Create a new connection string with the provided username and password
+                var loginConnectionString = new MySqlConnectionStringBuilder(connectionString)
+                {
+                    UserID = username,
+                    Password = password
+                }.ConnectionString;
+
+                using (var connection = new MySqlConnection(loginConnectionString))
                 {
                     connection.Open();
 
-                    // Kiểm tra tên người dùng và mật khẩu có hợp lệ không
-                    string checkUserQuery = $"SELECT 1 FROM mysql.user WHERE user = '{username}' AND authentication_string = PASSWORD('{password}');";
-                    using (var cmd = new MySqlCommand(checkUserQuery, connection))
-                    {
-                        var result = cmd.ExecuteScalar();
-                        if (result == null)
-                        {
-                            return false;
-                        }
-                    }
-
+                    // If the connection is successful, the login credentials are valid
                     string getFirstTableQuery = @"
-                    SELECT TABLE_NAME
-                    FROM information_schema.TABLE_PRIVILEGES
-                    WHERE GRANTEE = CONCAT('\'', @username, '\'@\'%\'' )
-                    LIMIT 1;
-                ";
+            SELECT TABLE_NAME
+            FROM information_schema.TABLE_PRIVILEGES
+            WHERE GRANTEE = CONCAT('\'', @username, '\'@\'%\'' )
+            LIMIT 1;";
 
                     using (var cmd = new MySqlCommand(getFirstTableQuery, connection))
                     {
@@ -216,8 +197,6 @@ namespace ReadDBSchema
             }
 
             return false;
-
         }
-
     }
 }
