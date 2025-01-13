@@ -133,24 +133,22 @@ namespace ReadDBSchema
 
                     using (var transaction = connection.BeginTransaction())
                     {
-                        // Tạo user (role) với mật khẩu
                         string createUserQuery = $"CREATE ROLE {username} WITH LOGIN PASSWORD '{password}';";
                         using (var createUserCommand = new NpgsqlCommand(createUserQuery, connection, transaction))
                         {
                             createUserCommand.ExecuteNonQuery();
                         }
 
-                        // Commit the transaction
                         transaction.Commit();
                     }
                 }
 
-                return true; // Thành công
+                return true; 
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error creating user: {ex.Message}");
-                return false; // Thất bại
+                return false; 
             }
         }
 
@@ -159,7 +157,6 @@ namespace ReadDBSchema
             tableName = string.Empty;
             try
             {
-                // Create a new connection string with the provided username and password
                 var loginConnectionString = new NpgsqlConnectionStringBuilder(connectionString)
                 {
                     Username = username,
@@ -170,7 +167,6 @@ namespace ReadDBSchema
                 {
                     connection.Open();
 
-                    // If the connection is successful, the login credentials are valid
                     string getFirstTableQuery = @"
                     SELECT table_name
                     FROM information_schema.table_privileges
@@ -196,5 +192,5 @@ namespace ReadDBSchema
 
             return false;
         }
-    }
 }
+    }
